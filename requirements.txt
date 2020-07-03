@@ -1,1 +1,5 @@
-fastapi[all]
+fastapi
+uvicorn
+numpy
+scipy
+pyconcord==0.3

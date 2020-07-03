@@ -6,4 +6,4 @@ local:
 request:
 	curl --request POST \
   --data '{"name":"xyz"}' \
-	  http://localhost:8000/concord -H "Content-Type: application/json"
+	  http://localhost:8000/concord/ -H "Content-Type: application/json"

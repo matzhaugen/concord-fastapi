@@ -9,8 +9,8 @@ RUN apt update && apt install -y curl &&\
 
 
 # # Copy using poetry.lock* in case it doesn't exist yet
-COPY ./app/pyproject.toml ./app/poetry.lock* /app/
+COPY ./pyproject.toml ./app/poetry.lock* /app/
 
 RUN poetry install --no-root --no-dev
 
-COPY ./app/main.py /app/main.py
+COPY ./main.py /app/main.py

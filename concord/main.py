@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from pydantic import BaseModel, validator
 import numpy as np
 from concord import concord
-from fastapi.testclient import TestClient
 
 app = FastAPI()
 

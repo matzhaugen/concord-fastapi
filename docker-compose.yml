@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  concord:
+    networks: 
+      - new
+    build: concord
+    volumes:
+      - ./concord:/app
+    ports:
+      - "8000:80"
+  middleware:
+    networks: 
+      - new
+    build: middleware
+    volumes:
+      - ./middleware/src:/app
+    entrypoint: /start-reload.sh
+    ports:
+      - "8001:80"
+
+networks:
+  new:
+# volumes:
+#   middleware:
+#     source: ./middleware

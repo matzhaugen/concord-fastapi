@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, validator
 import numpy as np
 from concord import concord
+import concord_helper
 
 app = FastAPI()
 
@@ -22,6 +23,26 @@ class Input(BaseModel):
                 "alpha": 0.2
             }
         }
+
+
+class WeightsRequest(BaseModel):
+    returns: List[List[float]]
+
+
+@app.post("/weights")
+def weights(request: WeightsRequest):
+    returns = request.returns
+    weights, lambda_min, lambda_1sd, omega_hat, mean_sparsity, \
+        std_sparsity, mean_rss, std_rss = concord_helper.concord_weights(np.array(returns))
+
+    return {"weights": weights.tolist(),
+            "omega": omega_hat.tolist(),
+            "lambda_min": lambda_min,
+            "lambda_1sd": lambda_1sd,
+            "mean_sparsity": mean_sparsity.tolist(),
+            "std_sparsity": std_sparsity.tolist(),
+            "mean_rss": mean_rss.tolist(),
+            "std_rss": std_rss.tolist()}
 
 
 @app.get("/")

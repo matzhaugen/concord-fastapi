@@ -3,6 +3,7 @@ from numpy import dot
 import pandas as pd
 import time
 from performance_metrics import wealth_growth, realized_values
+from concord_helper import concord_weights
 
 debug = False
 CSV_FILE = "dataSang.csv"
@@ -51,6 +52,8 @@ def get_weights(prices, method='vanilla', estimation_horizon=225):
 
     if method == 'vanilla':
         weights = predict_vanilla(n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225)
+    elif method == 'concord':
+        weights = predict_concord(n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225)
 
     return weights, returns, times, rebalance_dates
 
@@ -64,8 +67,7 @@ def predict_concord(n_periods, p, weights, returns,
 
     for period in range(n_periods):
         rb_int = rebalance_int[period]
-        if not period % 50:
-            print(period)
+
         m_returns = returns[times_int < rb_int, :][(-estimation_horizon - 1):]
         print(m_returns.shape)
         w = concord_weights(m_returns)
@@ -95,8 +97,7 @@ def predict_vanilla(n_periods, p, weights, returns,
 
     for period in range(n_periods):
         rb_int = rebalance_int[period]
-        if not period % 50:
-            print(period)
+
         m_returns = returns[times_int > rb_int][(-estimation_horizon - 1):]
 
         s = np.cov(m_returns.T)

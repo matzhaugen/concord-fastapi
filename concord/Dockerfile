@@ -13,4 +13,4 @@ COPY ./pyproject.toml ./app/poetry.lock* /app/
 
 RUN poetry install --no-root --no-dev
 
-COPY ./main.py /app/main.py
+COPY ./src/ /app/

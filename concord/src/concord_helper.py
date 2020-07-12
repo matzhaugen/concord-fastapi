@@ -1,4 +1,5 @@
 import numpy as np
+from concord import concord
 
 
 def s_func(x, lam):
@@ -53,32 +54,32 @@ def scale(data):
     return res
 
 
-def concord(data, lam, tol=1e-5, maxit=100):
-    x = scale(data)
-    p = data.shape[1]
-    s = np.cov(x.T)
-    w = np.eye(p)
-    r = 0
-    converged = False
-    w_current = w
-    # print T(0,1, w, s, lam)
-    # print T_vector(w, s, lam)[:3,:3]
-    while not converged and r < maxit:
-        w_old = w_current
-        # Updates to covariances w_ij
+# def concord(data, lam, tol=1e-5, maxit=100):
+#     x = scale(data)
+#     p = data.shape[1]
+#     s = np.cov(x.T)
+#     w = np.eye(p)
+#     r = 0
+#     converged = False
+#     w_current = w
+#     # print T(0,1, w, s, lam)
+#     # print T_vector(w, s, lam)[:3,:3]
+#     while not converged and r < maxit:
+#         w_old = w_current
+#         # Updates to covariances w_ij
 
-        for i in range(p):
-            for j in range(p):
-                w_current[i, j] = t(i, j, w_current, s, lam)
+#         for i in range(p):
+#             for j in range(p):
+#                 w_current[i, j] = t(i, j, w_current, s, lam)
 
-        # wr.append(w_current)
-        # check convergence
-        converged = np.amax(w_current - w_old) < tol
-        r += 1
-    if np.isnan(w_current[0, 0]):
-        from pdb import set_trace
-        set_trace()
-    return w_current
+#         # wr.append(w_current)
+#         # check convergence
+#         converged = np.amax(w_current - w_old) < tol
+#         r += 1
+#     if np.isnan(w_current[0, 0]):
+#         from pdb import set_trace
+#         set_trace()
+#     return w_current
 
 
 def row_diff(x):
@@ -102,11 +103,11 @@ def concord_weights(returns, coef_mu=1):
     """
     # compute returns
 
-    lambda_min, lambda_1sd, mean_sparsity, std_sparsity = cross_validate(returns)
-    omega_hat = concord(returns, lambda_1sd)
+    lambda_min, lambda_1sd, mean_sparsity, std_sparsity, mean_rss, std_rss = cross_validate(returns)
+    omega_hat = concord(returns, lambda_1sd).todense()
     vector = np.ones((omega_hat.shape[0], 1))
     coef = 1 / np.dot(np.dot(vector.T, omega_hat), vector)
-    w_eff = coef * np.dot(omega_hat, vector)
+    w_eff = float(coef) * np.dot(omega_hat, vector)
 
     if coef_mu == 1:
         pass
@@ -116,7 +117,8 @@ def concord_weights(returns, coef_mu=1):
         # mu = mu_min * coef_mu  # Try 2 first
         # w_eff = get_w_eff(mu_returns, omega_hat, mu)
         pass
-    return w_eff
+    return (w_eff, lambda_min, lambda_1sd, omega_hat, mean_sparsity, std_sparsity,
+            mean_rss, std_rss)
 
 
 def cross_validate_sub(x_train, x_test, p, lambdas):
@@ -126,7 +128,7 @@ def cross_validate_sub(x_train, x_test, p, lambdas):
     for j, lam in enumerate(lambdas):
         n_test, p_test = x_test.shape
         n_train, p_train = x_train.shape
-        omega_hat = concord(x_train, lam)
+        omega_hat = concord(x_train, lam).todense()
         nnz = len(omega_hat.nonzero()[0])
         sparsity[j] = 1 - (nnz - p) / float((p * (p - 1)))
         omega_d = np.diag(np.diag(omega_hat))
@@ -137,8 +139,8 @@ def cross_validate_sub(x_train, x_test, p, lambdas):
         rss[j] = np.linalg.norm(residuals) / float(n_test)
 
     if np.isnan(rss[0]):
-        from pdb import set_trace
-        set_trace()
+        raise ValueError("""Residuals after covariance estimate are zero.
+            Something is wrong""")
     return rss, sparsity
 
 
@@ -219,7 +221,7 @@ def cross_validate(data,
         set_trace()
     lambda_1sd = np.max(lambdas[mean_rss < np.min(mean_rss) + std_rss])
 
-    return lambda_min, lambda_1sd, mean_sparsity, std_sparsity
+    return lambda_min, lambda_1sd, mean_sparsity, std_sparsity, mean_rss, std_rss
 
 
 # def get_mean(prices, n_maf=4):
@@ -321,3 +323,9 @@ def cross_validate(data,
 
 #     sparsity = 1 - (r_sparse.nnz - p) / float((p * (p - 1)))
 #     return (omega, sparsity)
+
+if __name__ == '__main__':
+    from test_main import mock_df
+    prices = mock_df.loc[:'2009-09', :].to_numpy()
+    returns = np.diff(prices, axis=0) / prices[:-1, :]
+    concord_weights(np.array(returns))

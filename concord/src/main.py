@@ -27,13 +27,14 @@ class Input(BaseModel):
 
 class WeightsRequest(BaseModel):
     returns: List[List[float]]
+    robust: bool = True
 
 
 @app.post("/weights")
 def weights(request: WeightsRequest):
     returns = request.returns
     weights, lambda_min, lambda_1sd, omega_hat, mean_sparsity, \
-        std_sparsity, mean_rss, std_rss = concord_helper.concord_weights(np.array(returns))
+        std_sparsity, mean_rss, std_rss = concord_helper.concord_weights(np.array(returns), request.robust)
 
     return {"weights": weights.tolist(),
             "omega": omega_hat.tolist(),

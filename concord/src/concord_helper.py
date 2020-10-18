@@ -1,47 +1,5 @@
 import numpy as np
-from concord import concord
-
-
-def s_func(x, lam):
-    result = np.sign(x) * np.maximum(np.absolute(x) - lam, 0)
-    return result
-
-
-def t_vector(w, s, lam):
-
-    diag_s = np.diag(s)
-    diag_s_matrix = np.diag(diag_s)
-    sum_ii = np.einsum('ij,ij->i', w, s) - np.diag(w) * diag_s
-    sum_ij = np.dot(w, s) - np.dot(w, diag_s_matrix)
-    sum_ji = np.dot(w.T, s) - np.dot(w.T, diag_s_matrix)
-
-    numerator_ii = -sum_ii + np.sqrt(sum_ii**2 + 4 * diag_s)
-    numerator_ij = s_func(-(sum_ij + sum_ji), lam)
-
-    denominator = np.add.outer(diag_s, diag_s)
-
-    output = numerator_ij / denominator
-    np.fill_diagonal(output, numerator_ii / np.diag(denominator))
-
-    return output
-
-
-def t(i, j, w, s, lam):
-
-    if i == j:
-        sub_w = np.delete(w[i, :], j)
-        sub_s = np.delete(s[i, :], j)
-        my_sum = np.dot(sub_w, sub_s)
-        if s[i, i] == 0:
-            raise ValueError("S_ii is zero")
-        else:
-            output = (-my_sum + np.sqrt(my_sum**2 + (4 * s[i, i]))) / (2 * s[i, i])
-    else:
-        my_sum1 = np.dot(np.delete(w[i, :], j), np.delete(s[j, :], j))
-        my_sum2 = np.dot(np.delete(w[:, j], i), np.delete(s[i, :], i))
-        output = s_func(- (my_sum1 + my_sum2), lam) / (s[i, i] + s[j, j])
-
-    return output
+from concord import concord, robust_selection
 
 
 def scale(data):
@@ -52,34 +10,6 @@ def scale(data):
         res[:, i] = (res[:, i] - m) / s
 
     return res
-
-
-# def concord(data, lam, tol=1e-5, maxit=100):
-#     x = scale(data)
-#     p = data.shape[1]
-#     s = np.cov(x.T)
-#     w = np.eye(p)
-#     r = 0
-#     converged = False
-#     w_current = w
-#     # print T(0,1, w, s, lam)
-#     # print T_vector(w, s, lam)[:3,:3]
-#     while not converged and r < maxit:
-#         w_old = w_current
-#         # Updates to covariances w_ij
-
-#         for i in range(p):
-#             for j in range(p):
-#                 w_current[i, j] = t(i, j, w_current, s, lam)
-
-#         # wr.append(w_current)
-#         # check convergence
-#         converged = np.amax(w_current - w_old) < tol
-#         r += 1
-#     if np.isnan(w_current[0, 0]):
-#         from pdb import set_trace
-#         set_trace()
-#     return w_current
 
 
 def row_diff(x):
@@ -93,7 +23,7 @@ def row_diff(x):
     return d
 
 
-def concord_weights(returns, coef_mu=1):
+def concord_weights(returns, coef_mu=1, robust=False):
     """Cross-validate to find the best penalty and then compute the
     weights
 
@@ -103,8 +33,12 @@ def concord_weights(returns, coef_mu=1):
     """
     # compute returns
 
-    lambda_min, lambda_1sd, mean_sparsity, std_sparsity, mean_rss, std_rss = cross_validate(returns)
-    omega_hat = concord(returns, lambda_1sd).todense()
+    if robust:
+        optimal_lambda = robust_selection(returns)
+        lambda_min, mean_sparsity, std_sparsity, mean_rss, std_rss = (0, 0, 0, 0, 0)
+    else:
+        lambda_min, optimal_lambda, mean_sparsity, std_sparsity, mean_rss, std_rss = cross_validate(returns)
+    omega_hat = concord(returns, optimal_lambda).todense()
     vector = np.ones((omega_hat.shape[0], 1))
     coef = 1 / np.dot(np.dot(vector.T, omega_hat), vector)
     w_eff = float(coef) * np.dot(omega_hat, vector)
@@ -117,7 +51,7 @@ def concord_weights(returns, coef_mu=1):
         # mu = mu_min * coef_mu  # Try 2 first
         # w_eff = get_w_eff(mu_returns, omega_hat, mu)
         pass
-    return (w_eff, lambda_min, lambda_1sd, omega_hat, mean_sparsity, std_sparsity,
+    return (w_eff, lambda_min, optimal_lambda, omega_hat, mean_sparsity, std_sparsity,
             mean_rss, std_rss)
 
 
@@ -223,106 +157,6 @@ def cross_validate(data,
 
     return lambda_min, lambda_1sd, mean_sparsity, std_sparsity, mean_rss, std_rss
 
-
-# def get_mean(prices, n_maf=4):
-#     """Get the underlying mean of the returns by regressing the stock
-#     prices on the first k mafs and then taking the differences of the
-#     fit.
-
-#     Parameters
-#     ----------
-#     prices : np.array, n-by-p of time series
-#     n_maf : number of mafs to use in regression
-
-#     Returns
-#     -------
-#     r_hat_mean : Estimated mean returns using the maf reduction
-#     """
-#     n, p = prices.shape
-#     holding_period = 28
-#     mafs, w = maf(prices)
-#     mafs = mafs[:, :n_maf]
-#     x = sm.add_constant(mafs)
-#     d = np.dot(linalg.inv(np.dot(x.T, x)), x.T)
-#     beta_hat = np.dot(d, prices)
-#     p_hat = np.dot(x, beta_hat)
-
-#     # regress linear trend on last days of period using mafsmooth as predictors
-#     linear_trend = np.arange(n)
-#     beg_ind = n - holding_period
-
-#     data = {'y': p_hat[beg_ind:, :], 'x': linear_trend[beg_ind:]}
-#     outcome, predictors = dmatrices("y ~ x", data)
-#     betas = np.linalg.lstsq(predictors, outcome)[0]
-#     r_hat = np.dot(predictors, betas)
-
-#     # r = get_returns(prices)
-
-#     # if debug:
-#     #     if self.period == 0:
-#     #         if not os.path.isdir('debug'):
-#     #             os.makedirs('debug')
-#     #     self.period += 1
-#     #     fig, axs = plt.subplots(5,
-#     #                             5,
-#     #                             figsize=(15, 6),
-#     #                             facecolor='w',
-#     #                             edgecolor='k')
-#     #     fig.subplots_adjust(hspace=.1, wspace=.01)
-#     #     axs = axs.ravel()
-#     #     for i, ax in enumerate(axs):
-#     #         # ax.plot(prices[:, i], label="obs")
-#     #         ax.plot(p_hat[:, i], label="mean")
-#     #         ax.plot(prices[:, i], label="obs")
-#     #         ax.plot(np.linspace(beg_ind, estimation_horizon, holding_period),
-#     #                 r_hat[:, i],
-#     #                 label="mean")
-#     #         ax.set_xlim((0, estimation_horizon))
-#     #     plt.savefig('debug/mean_period_%d.pdf' % self.period)
-#     #     plt.close(fig)
-
-#     return betas[1, :]s
-
-# def maf_smooth(y, n_maf=2):
-#     """Smooth matrix with time series in the columns according to the
-#     first user-specified MAFs in the time series
-#     """
-#     mafs, w = maf(y)
-#     mafs = mafs[:, :n_maf]
-#     x = sm.add_constant(mafs)
-#     d = np.dot(np.linalg.inv(np.dot(x.T, x)), x.T)
-#     beta_hat = np.dot(d, y)
-#     y_hat = np.dot(x, beta_hat)
-#     return y_hat
-
-
-# def get_omega(self, returns, lam):
-#       p = returns.shape[1]
-#       std = np.std(returns, axis=0)
-#       d_inv = np.diag(1 / std)
-#       r_sparse = concord(scale(returns), lam)
-#       r_hat = r_sparse.todense()
-#       omega = np.dot(np.dot(d_inv, r_hat), d_inv)
-#       sparsity = 1 - (r_sparse.nnz - p) / float((p * (p-1)))
-#       return (omega, sparsity)
-
-# def get_omega(data, penalty):
-#     """Get the inverse covariance given a penalty. The data is scaled
-#     and the back-transformed to the original scale.
-#     Sparsity is also returned of the resulting omega (inverse covariance).
-#     """
-#     p = data.shape[1]
-#     # d = np.diag(std)
-#     # d_inv = np.diag(1 / std)
-#     # r_sparse = concord(scale(data), penalty)
-#     r_sparse = concord(data, penalty)
-#     r_hat = r_sparse.todense()
-#     # sigma = dot(d, dot(linalg.inv(r_hat), d))
-#     # omega = dot(dot(d_inv, r_hat), d_inv)
-#     omega = np.array(r_hat)
-
-#     sparsity = 1 - (r_sparse.nnz - p) / float((p * (p - 1)))
-#     return (omega, sparsity)
 
 if __name__ == '__main__':
     from test_main import mock_df

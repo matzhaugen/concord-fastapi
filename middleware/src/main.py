@@ -6,6 +6,8 @@ import pandas as pd
 import requests
 import time
 import helper
+import service
+
 
 app = FastAPI()
 
@@ -28,27 +30,14 @@ def read_root():
     return res.json()
 
 
-@app.get("/tickers/")
+@app.get("/tickers")
 def tickers():
-
     prices = helper.get_data()
     return {"tickers": prices.columns.tolist()}
 
 
 @app.post("/portfolio/")
 def portfolio(request: PortfolioRequest):
+    result = service.get_portfolio(request.tickers, request.method)
 
-    prices = helper.get_data(request.tickers)
-    method = request.method
-    weights, returns, times, rebalance_dates = helper.get_weights(prices, method=method)
-    wealth_times, wealth_values = helper.get_wealth(weights, returns, times, rebalance_dates)
-
-    result_ts = pd.DataFrame(
-        data=np.array([np.around(wealth_values, 3), wealth_times]).T,
-        columns=['value', 'date'])
-    weights_data = [{'value': w, 'date': rbd} for w, rbd in zip(weights.tolist(), rebalance_dates.astype(str).tolist())]
-    result = {
-        'wealth_data': result_ts.to_json(orient='records'),
-        'weights_data': weights_data
-    }
     return result

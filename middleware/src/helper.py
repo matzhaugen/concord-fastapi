@@ -3,7 +3,7 @@ from numpy import dot
 import pandas as pd
 import time
 from performance_metrics import wealth_growth, realized_values
-from concord_helper import concord_weights
+import requests
 
 debug = False
 CSV_FILE = "dataSang.csv"
@@ -58,6 +58,13 @@ def get_weights(prices, method='vanilla', estimation_horizon=225):
     return weights, returns, times, rebalance_dates
 
 
+def concord_weights(returns):
+    res = requests.post("http://concord:80/weights/",
+                        json={"returns": returns.tolist()})
+
+    return np.array(res.json()['weights'])
+
+
 def predict_concord(n_periods, p, weights, returns,
                     times_int,
                     rebalance_int,
@@ -65,11 +72,12 @@ def predict_concord(n_periods, p, weights, returns,
                     coef_mu=1,
                     estimation_horizon=225):
 
-    for period in range(n_periods):
+    # for period in range(n_periods):
+    for period in range(3):
         rb_int = rebalance_int[period]
 
         m_returns = returns[times_int < rb_int, :][(-estimation_horizon - 1):]
-        print(m_returns.shape)
+
         w = concord_weights(m_returns)
         weights[period, :] = w.ravel()
 

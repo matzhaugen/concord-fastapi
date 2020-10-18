@@ -12,6 +12,7 @@ app = FastAPI()
 
 class PortfolioRequest(BaseModel):
     tickers: List[str]
+    method: str
 
     class Config:
         schema_extra = {
@@ -38,7 +39,8 @@ def tickers():
 def portfolio(request: PortfolioRequest):
 
     prices = helper.get_data(request.tickers)
-    weights, returns, times, rebalance_dates = helper.get_weights(prices)
+    method = request.method
+    weights, returns, times, rebalance_dates = helper.get_weights(prices, method=method)
     wealth_times, wealth_values = helper.get_wealth(weights, returns, times, rebalance_dates)
 
     result_ts = pd.DataFrame(

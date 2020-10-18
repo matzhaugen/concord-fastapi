@@ -5,7 +5,10 @@ services:
       - new
     build: concord
     volumes:
-      - ./concord:/app
+      - ./concord/src:/app
+    entrypoint: /start.sh
+    environment:
+      WORKERS_PER_CORE: 5
     ports:
       - "8000:80"
   middleware:

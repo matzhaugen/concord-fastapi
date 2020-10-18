@@ -17,3 +17,9 @@ server:
 
 middleware:
 	docker build -t matzhaugen/middleware:latest middleware
+
+test-middleware:
+	cd middleware/src && poetry run python -m pytest --pdb && cd ../..
+
+smoke: 
+	curl -X POST localhost:8001/portfolio/ -d '{"tickers": ["AA", "AXP"], "method": "concord"}'

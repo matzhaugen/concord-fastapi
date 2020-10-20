@@ -1,14 +1,14 @@
 version: '3.8'
 services:
-  concord:
+  backend:
     networks: 
       - new
-    build: concord
+    build: backend
     volumes:
-      - ./concord/src:/app
+      - ./backend/src:/app
     entrypoint: /start.sh
     environment:
-      WORKERS_PER_CORE: 5
+      WORKERS_PER_CORE: 2
     ports:
       - "8000:80"
   middleware:

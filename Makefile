@@ -9,7 +9,7 @@ local:
 request:
 	curl -X POST -d '{"covariance": [[1,0,0],[0,1,0], [0, 0, 1]], "alpha":"0.1"}' localhost:8000/concord/
 
-hey:
+loadtest:
 	hey -n 100 -m POST -d '{"covariance": [[1,0,0],[0,1,0], [0, 0, 1]], "alpha":"0.1"}' http://localhost:8000/concord/
 
 server:

@@ -4,7 +4,6 @@ from pydantic import BaseModel, validator
 import numpy as np
 import pandas as pd
 import requests
-import time
 import helper
 import service
 
@@ -23,10 +22,9 @@ class PortfolioRequest(BaseModel):
             }
         }
 
-
 @app.get("/")
 def read_root():
-    res = requests.get("http://concord:80/")
+    res = requests.get("http://backend:80/")
     return res.json()
 
 

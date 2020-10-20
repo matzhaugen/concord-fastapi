@@ -22,8 +22,14 @@ def row_diff(x):
 
     return d
 
+def get_weights_from_lambda(returns, optimal_lambda):
+    omega_hat = concord(returns, optimal_lambda).todense()
+    vector = np.ones((omega_hat.shape[0], 1))
+    coef = 1 / np.dot(np.dot(vector.T, omega_hat), vector)
+    w_eff = float(coef) * np.dot(omega_hat, vector)
+    return omega_hat, w_eff
 
-def concord_weights(returns, coef_mu=1, robust=False):
+def robust_concord_weights(returns, coef_mu=1):
     """Cross-validate to find the best penalty and then compute the
     weights
 
@@ -33,15 +39,25 @@ def concord_weights(returns, coef_mu=1, robust=False):
     """
     # compute returns
 
-    if robust:
-        optimal_lambda = robust_selection(returns)
-        lambda_min, mean_sparsity, std_sparsity, mean_rss, std_rss = (0, 0, 0, 0, 0)
-    else:
-        lambda_min, optimal_lambda, mean_sparsity, std_sparsity, mean_rss, std_rss = cross_validate(returns)
-    omega_hat = concord(returns, optimal_lambda).todense()
-    vector = np.ones((omega_hat.shape[0], 1))
-    coef = 1 / np.dot(np.dot(vector.T, omega_hat), vector)
-    w_eff = float(coef) * np.dot(omega_hat, vector)
+    
+    optimal_lambda = robust_selection(returns)
+    omega_hat, w_eff = get_weights_from_lambda(returns, optimal_lambda)
+    
+    return (w_eff, optimal_lambda)
+
+
+def concord_weights(returns, coef_mu=1):
+    """Cross-validate to find the best penalty and then compute the
+    weights
+
+    Parameters
+    ----------
+    returns -- Matrix of returns
+    """
+    # compute returns
+
+    lambda_min, optimal_lambda, mean_sparsity, std_sparsity, mean_rss, std_rss = cross_validate(returns)
+    omega_hat, w_eff = get_weights_from_lambda(returns, optimal_lambda)
 
     if coef_mu == 1:
         pass

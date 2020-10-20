@@ -7,7 +7,7 @@ import requests
 
 debug = False
 CSV_FILE = "dataSang.csv"
-
+BACKEND_NAME = "backend"
 
 def get_wealth(weights, returns, times, rebalance_dates):
     realized_return, realized_risk, realized_return_vector, sharpe = \
@@ -59,7 +59,7 @@ def get_weights(prices, method='vanilla', estimation_horizon=225):
 
 
 def concord_weights(returns):
-    res = requests.post("http://concord:80/weights/",
+    res = requests.post(f"http://{BACKEND_NAME}:80/robustweights/",
                         json={"returns": returns.tolist()})
 
     return np.array(res.json()['weights'])
@@ -73,13 +73,29 @@ def predict_concord(n_periods, p, weights, returns,
                     estimation_horizon=225):
 
     # for period in range(n_periods):
-    for period in range(3):
+    import concurrent.futures
+    m_returns = []
+    for period in range(n_periods):
         rb_int = rebalance_int[period]
+        m_returns.append(returns[times_int < rb_int, :][(-estimation_horizon - 1):])
 
-        m_returns = returns[times_int < rb_int, :][(-estimation_horizon - 1):]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        # Start the load operations and mark each future with its URL
+        future_to_period = {executor.submit(concord_weights, m_returns[period]): period for period in range(n_periods)}
+        for future in concurrent.futures.as_completed(future_to_period):
+            period = future_to_period[future]
+            try:
+                weights[period, :] = future.result().ravel()
+            except Exception as exc:
+                print('%r generated an exception: %s' % (period, exc))
+            else:
+                print('%d period is %d length' % (period, len(weights[period, :])))
+    # for period in range(30):
+    #     rb_int = rebalance_int[period]
 
-        w = concord_weights(m_returns)
-        weights[period, :] = w.ravel()
+    #     m_returns = returns[times_int < rb_int, :][(-estimation_horizon - 1):]
+    #     w = concord_weights(m_returns)
+    #     weights[period, :] = w.ravel()
 
     return weights
 

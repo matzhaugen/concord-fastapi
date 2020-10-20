@@ -45,6 +45,14 @@ def weights(request: WeightsRequest):
             "mean_rss": mean_rss.tolist(),
             "std_rss": std_rss.tolist()}
 
+@app.post("/robustweights")
+def robustweights(request: WeightsRequest):
+    returns = request.returns
+    weights, lambda_robust = concord_helper.robust_concord_weights(np.array(returns), request.robust)
+
+    return {"weights": weights.tolist(),
+            "lambda_robust": lambda_robust,
+            }
 
 @app.get("/")
 def read_root():

@@ -6,6 +6,9 @@ run:
 local:
 	cd concord && poetry run uvicorn main:app --reload && cd ..
 
+portfolio:
+	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost:8001/portfolio
+
 request:
 	curl -X POST -d '{"covariance": [[1,0,0],[0,1,0], [0, 0, 1]], "alpha":"0.1"}' localhost:8000/concord/
 
@@ -15,11 +18,11 @@ loadtest:
 server:
 	docker-compose up
 
-middleware:
-	docker build -t matzhaugen/middleware:latest middleware
+build-images:
+	docker-compose build
 
 test-middleware:
 	cd middleware/src && poetry run python -m pytest --pdb && cd ../..
 
 smoke: 
-	curl -X POST localhost:8001/portfolio/ -d '{"tickers": ["AA", "AXP"], "method": "concord"}'
+	curl -X POST localhost:8000/portfolio -d '{"tickers": ["AA", "AXP"], endDate: "01-02-2020", "method": "concord"}'

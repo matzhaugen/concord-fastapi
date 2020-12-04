@@ -1,83 +1,84 @@
 [[package]]
-name = "atomicwrites"
-version = "1.4.0"
-description = "Atomic file writes."
 category = "dev"
+description = "Atomic file writes."
+marker = "sys_platform == \"win32\""
+name = "atomicwrites"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.4.0"
 
 [[package]]
-name = "attrs"
-version = "20.2.0"
-description = "Classes Without Boilerplate"
 category = "dev"
+description = "Classes Without Boilerplate"
+name = "attrs"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "20.2.0"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "sphinx", "sphinx-rtd-theme", "pre-commit"]
+dev = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "sphinx", "sphinx-rtd-theme", "pre-commit"]
 docs = ["sphinx", "sphinx-rtd-theme", "zope.interface"]
-tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface"]
-tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six"]
+tests = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface"]
+tests_no_zope = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six"]
 
 [[package]]
-name = "certifi"
-version = "2020.6.20"
-description = "Python package for providing Mozilla's CA Bundle."
-category = "dev"
-optional = false
-python-versions = "*"
-
-[[package]]
-name = "chardet"
-version = "3.0.4"
-description = "Universal encoding detector for Python 2 and 3"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[[package]]
-name = "click"
-version = "7.1.2"
-description = "Composable command line interface toolkit"
 category = "main"
+description = "Python package for providing Mozilla's CA Bundle."
+name = "certifi"
+optional = false
+python-versions = "*"
+version = "2020.6.20"
+
+[[package]]
+category = "main"
+description = "Universal encoding detector for Python 2 and 3"
+name = "chardet"
+optional = false
+python-versions = "*"
+version = "3.0.4"
+
+[[package]]
+category = "main"
+description = "Composable command line interface toolkit"
+name = "click"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "7.1.2"
 
 [[package]]
-name = "cloudpickle"
-version = "1.6.0"
-description = "Extended pickling support for Python objects"
 category = "main"
+description = "Extended pickling support for Python objects"
+name = "cloudpickle"
 optional = false
 python-versions = ">=3.5"
+version = "1.6.0"
 
 [[package]]
-name = "colorama"
-version = "0.4.4"
-description = "Cross-platform colored terminal text."
 category = "main"
+description = "Cross-platform colored terminal text."
+name = "colorama"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "0.4.4"
 
 [[package]]
-name = "commonmark"
-version = "0.9.1"
-description = "Python parser for the CommonMark Markdown spec"
 category = "main"
+description = "Python parser for the CommonMark Markdown spec"
+name = "commonmark"
 optional = false
 python-versions = "*"
+version = "0.9.1"
 
 [package.extras]
 test = ["flake8 (3.7.8)", "hypothesis (3.55.3)"]
 
 [[package]]
-name = "fastapi"
-version = "0.58.1"
-description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 category = "main"
+description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
+name = "fastapi"
 optional = false
 python-versions = ">=3.6"
+version = "0.58.1"
 
 [package.dependencies]
 pydantic = ">=0.32.2,<2.0.0"
@@ -90,67 +91,76 @@ doc = ["mkdocs", "mkdocs-material", "markdown-include", "typer", "typer-cli", "p
 test = ["pytest (5.4.3)", "pytest-cov (2.10.0)", "mypy", "black", "isort", "requests", "email-validator", "sqlalchemy", "peewee", "databases", "orjson", "async-exit-stack", "async-generator", "python-multipart", "aiofiles", "flask"]
 
 [[package]]
-name = "h11"
-version = "0.9.0"
-description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
 category = "main"
+description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
+name = "h11"
 optional = false
 python-versions = "*"
+version = "0.9.0"
 
 [[package]]
-name = "httptools"
-version = "0.1.1"
-description = "A collection of framework independent HTTP protocol utils."
 category = "main"
+description = "A collection of framework independent HTTP protocol utils."
+marker = "sys_platform != \"win32\" and sys_platform != \"cygwin\" and platform_python_implementation != \"PyPy\""
+name = "httptools"
 optional = false
 python-versions = "*"
+version = "0.1.1"
 
 [package.extras]
 test = ["Cython (0.29.14)"]
 
 [[package]]
-name = "idna"
-version = "2.10"
-description = "Internationalized Domain Names in Applications (IDNA)"
-category = "dev"
+category = "main"
+description = "camelCase converter"
+name = "humps"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+python-versions = "*"
+version = "0.2.2"
 
 [[package]]
-name = "more-itertools"
-version = "8.5.0"
-description = "More routines for operating on iterables, beyond itertools"
+category = "main"
+description = "Internationalized Domain Names in Applications (IDNA)"
+name = "idna"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "2.10"
+
+[[package]]
 category = "dev"
+description = "More routines for operating on iterables, beyond itertools"
+name = "more-itertools"
 optional = false
 python-versions = ">=3.5"
+version = "8.5.0"
 
 [[package]]
-name = "numpy"
-version = "1.19.2"
-description = "NumPy is the fundamental package for array computing with Python."
 category = "main"
+description = "NumPy is the fundamental package for array computing with Python."
+name = "numpy"
 optional = false
 python-versions = ">=3.6"
+version = "1.19.2"
 
 [[package]]
-name = "packaging"
-version = "20.4"
-description = "Core utilities for Python packages"
 category = "dev"
+description = "Core utilities for Python packages"
+name = "packaging"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "20.4"
 
 [package.dependencies]
 pyparsing = ">=2.0.2"
 six = "*"
 
 [[package]]
-name = "pandas"
-version = "1.1.3"
-description = "Powerful data structures for data analysis, time series, and statistics"
 category = "main"
+description = "Powerful data structures for data analysis, time series, and statistics"
+name = "pandas"
 optional = false
 python-versions = ">=3.6.1"
+version = "1.1.3"
 
 [package.dependencies]
 numpy = ">=1.15.4"
@@ -161,43 +171,43 @@ pytz = ">=2017.2"
 test = ["pytest (>=4.0.2)", "pytest-xdist", "hypothesis (>=3.58)"]
 
 [[package]]
-name = "pluggy"
-version = "0.13.1"
-description = "plugin and hook calling mechanisms for python"
 category = "dev"
+description = "plugin and hook calling mechanisms for python"
+name = "pluggy"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.13.1"
 
 [package.extras]
 dev = ["pre-commit", "tox"]
 
 [[package]]
-name = "py"
-version = "1.9.0"
-description = "library with cross-python path, ini-parsing, io, code, log facilities"
 category = "dev"
+description = "library with cross-python path, ini-parsing, io, code, log facilities"
+name = "py"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.9.0"
 
 [[package]]
-name = "pyconcord"
-version = "0.3.1"
-description = "Python implemetation of the concord algorithm for pseudo-likelihood graphical model selection"
 category = "main"
+description = "Python implemetation of the concord algorithm for pseudo-likelihood graphical model selection"
+name = "pyconcord"
 optional = false
 python-versions = "*"
+version = "0.3.1"
 
 [package.dependencies]
 numpy = ">=1.18.0"
 scipy = ">=1.5.0"
 
 [[package]]
-name = "pydantic"
-version = "1.6.1"
-description = "Data validation and settings management using python 3.6 type hinting"
 category = "main"
+description = "Data validation and settings management using python 3.6 type hinting"
+name = "pydantic"
 optional = false
 python-versions = ">=3.6"
+version = "1.6.1"
 
 [package.extras]
 dotenv = ["python-dotenv (>=0.10.4)"]
@@ -205,33 +215,33 @@ email = ["email-validator (>=1.0.3)"]
 typing_extensions = ["typing-extensions (>=3.7.2)"]
 
 [[package]]
-name = "pygments"
-version = "2.7.1"
-description = "Pygments is a syntax highlighting package written in Python."
 category = "main"
+description = "Pygments is a syntax highlighting package written in Python."
+name = "pygments"
 optional = false
 python-versions = ">=3.5"
+version = "2.7.1"
 
 [[package]]
-name = "pyparsing"
-version = "2.4.7"
-description = "Python parsing module"
 category = "dev"
+description = "Python parsing module"
+name = "pyparsing"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "2.4.7"
 
 [[package]]
-name = "pytest"
-version = "5.4.3"
-description = "pytest: simple powerful testing with Python"
 category = "dev"
+description = "pytest: simple powerful testing with Python"
+name = "pytest"
 optional = false
 python-versions = ">=3.5"
+version = "5.4.3"
 
 [package.dependencies]
-atomicwrites = {version = ">=1.0", markers = "sys_platform == \"win32\""}
+atomicwrites = ">=1.0"
 attrs = ">=17.4.0"
-colorama = {version = "*", markers = "sys_platform == \"win32\""}
+colorama = "*"
 more-itertools = ">=4.0.0"
 packaging = "*"
 pluggy = ">=0.12,<1.0"
@@ -243,49 +253,49 @@ checkqa-mypy = ["mypy (v0.761)"]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
-name = "python-dateutil"
-version = "2.8.1"
-description = "Extensions to the standard Python datetime module"
 category = "main"
+description = "Extensions to the standard Python datetime module"
+name = "python-dateutil"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+version = "2.8.1"
 
 [package.dependencies]
 six = ">=1.5"
 
 [[package]]
-name = "pytz"
-version = "2020.1"
-description = "World timezone definitions, modern and historical"
 category = "main"
+description = "World timezone definitions, modern and historical"
+name = "pytz"
 optional = false
 python-versions = "*"
+version = "2020.1"
 
 [[package]]
-name = "requests"
-version = "2.24.0"
+category = "main"
 description = "Python HTTP for Humans."
-category = "dev"
+name = "requests"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "2.25.0"
 
 [package.dependencies]
 certifi = ">=2017.4.17"
 chardet = ">=3.0.2,<4"
 idna = ">=2.5,<3"
-urllib3 = ">=1.21.1,<1.25.0 || >1.25.0,<1.25.1 || >1.25.1,<1.26"
+urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
 security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)"]
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 
 [[package]]
-name = "rich"
-version = "9.0.0"
-description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
+description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
+name = "rich"
 optional = false
 python-versions = ">=3.6,<4.0"
+version = "9.0.0"
 
 [package.dependencies]
 colorama = ">=0.4.0,<0.5.0"
@@ -297,62 +307,62 @@ typing-extensions = ">=3.7.4,<4.0.0"
 jupyter = ["ipywidgets (>=7.5.1,<8.0.0)"]
 
 [[package]]
-name = "scalene"
-version = "0.9.21"
-description = "Scalene: A high-resolution, low-overhead CPU and memory profiler for Python"
 category = "main"
+description = "Scalene: A high-resolution, low-overhead CPU and memory profiler for Python"
+name = "scalene"
 optional = false
 python-versions = ">=3.5"
+version = "0.9.21"
 
 [package.dependencies]
 cloudpickle = ">=1.5.0"
 rich = ">=2.0.0"
 
 [[package]]
-name = "scipy"
-version = "1.5.3"
-description = "SciPy: Scientific Library for Python"
 category = "main"
+description = "SciPy: Scientific Library for Python"
+name = "scipy"
 optional = false
 python-versions = ">=3.6"
+version = "1.5.3"
 
 [package.dependencies]
 numpy = ">=1.14.5"
 
 [[package]]
-name = "six"
-version = "1.15.0"
-description = "Python 2 and 3 compatibility utilities"
 category = "main"
+description = "Python 2 and 3 compatibility utilities"
+name = "six"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "1.15.0"
 
 [[package]]
-name = "starlette"
-version = "0.13.4"
-description = "The little ASGI library that shines."
 category = "main"
+description = "The little ASGI library that shines."
+name = "starlette"
 optional = false
 python-versions = ">=3.6"
+version = "0.13.4"
 
 [package.extras]
 full = ["aiofiles", "graphene", "itsdangerous", "jinja2", "python-multipart", "pyyaml", "requests", "ujson"]
 
 [[package]]
-name = "typing-extensions"
-version = "3.7.4.3"
-description = "Backported and Experimental Type Hints for Python 3.5+"
 category = "main"
+description = "Backported and Experimental Type Hints for Python 3.5+"
+name = "typing-extensions"
 optional = false
 python-versions = "*"
+version = "3.7.4.3"
 
 [[package]]
-name = "urllib3"
-version = "1.25.10"
+category = "main"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
-category = "dev"
+name = "urllib3"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
+version = "1.25.10"
 
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
@@ -360,51 +370,52 @@ secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "pyOpenSSL (>=0
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 
 [[package]]
-name = "uvicorn"
-version = "0.11.8"
-description = "The lightning-fast ASGI server."
 category = "main"
+description = "The lightning-fast ASGI server."
+name = "uvicorn"
 optional = false
 python-versions = "*"
+version = "0.11.8"
 
 [package.dependencies]
 click = ">=7.0.0,<8.0.0"
 h11 = ">=0.8,<0.10"
-httptools = {version = ">=0.1.0,<0.2.0", markers = "sys_platform != \"win32\" and sys_platform != \"cygwin\" and platform_python_implementation != \"PyPy\""}
-uvloop = {version = ">=0.14.0", markers = "sys_platform != \"win32\" and sys_platform != \"cygwin\" and platform_python_implementation != \"PyPy\""}
+httptools = ">=0.1.0,<0.2.0"
+uvloop = ">=0.14.0"
 websockets = ">=8.0.0,<9.0.0"
 
 [package.extras]
 watchgodreload = ["watchgod (>=0.6,<0.7)"]
 
 [[package]]
-name = "uvloop"
-version = "0.14.0"
+category = "main"
 description = "Fast implementation of asyncio event loop on top of libuv"
-category = "main"
+marker = "sys_platform != \"win32\" and sys_platform != \"cygwin\" and platform_python_implementation != \"PyPy\""
+name = "uvloop"
 optional = false
 python-versions = "*"
+version = "0.14.0"
 
 [[package]]
-name = "wcwidth"
-version = "0.2.5"
-description = "Measures the displayed width of unicode strings in a terminal"
 category = "dev"
+description = "Measures the displayed width of unicode strings in a terminal"
+name = "wcwidth"
 optional = false
 python-versions = "*"
+version = "0.2.5"
 
 [[package]]
-name = "websockets"
-version = "8.1"
-description = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
 category = "main"
+description = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
+name = "websockets"
 optional = false
 python-versions = ">=3.6.1"
+version = "8.1"
 
 [metadata]
-lock-version = "1.1"
+content-hash = "bdd0f5d59db9593fa5ceb9447a73d8becddc15bbcee762f1c069ce7ec4041cbd"
+lock-version = "1.0"
 python-versions = "^3.8"
-content-hash = "9e9637425d9f3d82b6703d83d13d6de3708002ab0daf1aff27600735af311517"
 
 [metadata.files]
 atomicwrites = [
@@ -460,6 +471,10 @@ httptools = [
     {file = "httptools-0.1.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:3592e854424ec94bd17dc3e0c96a64e459ec4147e6d53c0a42d0ebcef9cb9c5d"},
     {file = "httptools-0.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:0a4b1b2012b28e68306575ad14ad5e9120b34fccd02a81eb08838d7e3bbb48be"},
     {file = "httptools-0.1.1.tar.gz", hash = "sha256:41b573cf33f64a8f8f3400d0a7faf48e1888582b6f6e02b82b9bd4f0bf7497ce"},
+]
+humps = [
+    {file = "humps-0.2.2-py2.py3-none-any.whl", hash = "sha256:401de60fd73673b697086ba7c865966751c57b11cce57a37c9eabb3e75938417"},
+    {file = "humps-0.2.2.tar.gz", hash = "sha256:777f7a17f6b20aa9cc078d63b56ebd66532c6b2c88b370f1d596d5205410f67c"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -580,8 +595,8 @@ pytz = [
     {file = "pytz-2020.1.tar.gz", hash = "sha256:c35965d010ce31b23eeb663ed3cc8c906275d6be1a34393a1d73a41febf4a048"},
 ]
 requests = [
-    {file = "requests-2.24.0-py2.py3-none-any.whl", hash = "sha256:fe75cc94a9443b9246fc7049224f75604b113c36acb93f87b80ed42c44cbb898"},
-    {file = "requests-2.24.0.tar.gz", hash = "sha256:b3559a131db72c33ee969480840fff4bb6dd111de7dd27c8ee1f820f4f00231b"},
+    {file = "requests-2.25.0-py2.py3-none-any.whl", hash = "sha256:e786fa28d8c9154e6a4de5d46a1d921b8749f8b74e28bde23768e5e16eece998"},
+    {file = "requests-2.25.0.tar.gz", hash = "sha256:7f1a0b932f4a60a1a65caa4263921bb7d9ee911957e0ae4a23a6dd08185ad5f8"},
 ]
 rich = [
     {file = "rich-9.0.0-py3-none-any.whl", hash = "sha256:c51c9f10250bb5d2db3ca7f89db2c581807dea37a1a5428b03af1bc043f29df0"},

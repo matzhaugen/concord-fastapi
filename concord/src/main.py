@@ -1,19 +1,22 @@
 from typing import List
 from fastapi import FastAPI
-from pydantic import BaseModel, validator
-import numpy as np
-import pandas as pd
+from pydantic import BaseModel
+from datetime import date
 import requests
-import helper
+import db
 import service
 
 
 app = FastAPI()
 
+def to_camel(string: str) -> str:
+    result = ''.join(word.capitalize() for word in string.split('_'))
+    result = result[0].lower() + result[1:]
+    return result
 
 class PortfolioRequest(BaseModel):
     tickers: List[str]
-    method: str
+    end_date: date
 
     class Config:
         schema_extra = {
@@ -21,6 +24,9 @@ class PortfolioRequest(BaseModel):
                 "tickers": ['AA', 'AXP'],
             }
         }
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        
 
 @app.get("/")
 def read_root():
@@ -30,12 +36,12 @@ def read_root():
 
 @app.get("/tickers")
 def tickers():
-    prices = helper.get_data()
+    prices = db.get_data()
     return {"tickers": prices.columns.tolist()}
 
 
-@app.post("/portfolio/")
+@app.post("/portfolio")
 def portfolio(request: PortfolioRequest):
-    result = service.get_portfolio(request.tickers, request.method)
+    result = service.get_portfolio(request.tickers, request.end_date.strftime('%Y-%m-%d'))
 
-    return result
+    return result.json()

@@ -6,17 +6,17 @@ services:
     build: backend
     volumes:
       - ./backend/src:/app
-    entrypoint: /start.sh
+    entrypoint: /start-reload.sh
     environment:
-      WORKERS_PER_CORE: 2
+      WORKERS_PER_CORE: 1
     ports:
       - "8000:80"
   middleware:
     networks: 
       - new
-    build: middleware
+    build: concord
     volumes:
-      - ./middleware/src:/app
+      - ./concord/src:/app
     entrypoint: /start-reload.sh
     ports:
       - "8001:80"

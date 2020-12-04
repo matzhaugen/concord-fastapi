@@ -1,15 +1,20 @@
 from typing import List
 from fastapi import FastAPI
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
+
 import numpy as np
+import pandas as pd
 from concord import concord
 import concord_helper
+import data_transforms
+import db
 
 app = FastAPI()
 
-
 class Item(BaseModel):
     name: str
+
+
 
 
 class Input(BaseModel):
@@ -25,8 +30,13 @@ class Input(BaseModel):
         }
 
 
+class CreatePortfolioRequest(BaseModel):
+    tickers: List[str]
+    end_date: str
+
+
 class WeightsRequest(BaseModel):
-    returns: List[List[float]]
+    prices: List[List[float]]
     robust: bool = True
 
 
@@ -44,6 +54,26 @@ def weights(request: WeightsRequest):
             "std_sparsity": std_sparsity.tolist(),
             "mean_rss": mean_rss.tolist(),
             "std_rss": std_rss.tolist()}
+
+@app.post("/portfolio")
+def create_portfolio(request: CreatePortfolioRequest):
+    print(request)
+    prices = db.get_data(request.tickers, request.end_date)
+    method = "concord" # TODO :remove this hard-coding
+
+    weights, returns, times, rebalance_dates = concord_helper.get_weights(prices, method=method)
+    wealth_times, wealth_values = data_transforms.get_wealth(weights, returns, times, rebalance_dates)
+
+    result_ts = pd.DataFrame(
+        data=np.array([np.around(wealth_values, 3), wealth_times]).T,
+        columns=['value', 'date'])
+    weights_data = [{'values': w, 'date': rbd} for w, rbd in zip(weights.tolist(), rebalance_dates.astype(str).tolist())]
+    response = {
+        'wealth_data': result_ts.to_json(orient='records'),
+        'weights_data': weights_data
+    }
+    return response
+
 
 @app.post("/robustweights")
 def robustweights(request: WeightsRequest):

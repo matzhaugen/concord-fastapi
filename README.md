@@ -12,10 +12,21 @@ Now your server is running on 8001 with a backend on 8000.
 
 To see the api documentation go to your browser and type `localhost:8001/docs`.
 
+## Example requests
+
+```
+curl localhost:8001/tickers
+```
+
+```
+curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost:8001/portfolio
+```
 
 ## How to scale this
 
-Because the backend is just an http server this will not scale well. Instead a coud run function could be the way to go. There might be other ideas, like a Kubernetes Deployment with a pubsub subscriber and scaling by the number of undelivered pubsub messages.
+Because the backend is just an http server this will not scale well. Instead a serveless function could be the way to go, for example using [openfaas](https://www.openfaas.com/).
+
+There might be other ideas, like a Kubernetes Deployment with a pubsub subscriber and scaling by the number of undelivered pubsub messages.
 
 
 ### GCS cloud run deployment

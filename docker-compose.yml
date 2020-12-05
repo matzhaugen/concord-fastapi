@@ -12,7 +12,7 @@ services:
     ports:
       - "8000:80"
   concord:
-    networks: 
+    networks:
       - new
     build: concord
     volumes:
@@ -20,6 +20,7 @@ services:
     entrypoint: /start-reload.sh
     environment:
       MODULE_NAME: src.main
+      BACKEND_URL: http://backend:80
     ports:
       - "8001:80"
 

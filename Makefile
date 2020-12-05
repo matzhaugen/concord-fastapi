@@ -1,6 +1,9 @@
 portfolio:
 	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost:8001/portfolio
 
+kind-portfolio:
+	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio
+
 server:
 	docker-compose up
 

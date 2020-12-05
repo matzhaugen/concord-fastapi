@@ -35,13 +35,14 @@ spec:
       containers:
         - name: concord
           image: localhost:5000/concord-fastapi_concord:latest
+          command: ['/start-reload.sh']
           env:
             - name: PORT
               value: "81"
             - name: MODULE_NAME
               value: src.main
             - name: BACKEND_URL
-              value: http://backend:80
+              value: http://localhost:80
             - name: PYTHONUNBUFFERED
               value: "1"
             - name: PYTHONIOENCODING
@@ -49,11 +50,26 @@ spec:
           ports:
           - name: api
             containerPort: 81
+          volumeMounts:
+            - name: local-repo
+              mountPath: /app/src/
+              subPath: concord/src/
+              readOnly: true
         - name: backend
           image: localhost:5000/concord-fastapi_backend:latest
+          command: ['/start-reload.sh']
           env:
             - name: MODULE_NAME
               value: src.main
           ports:
           - name: api
             containerPort: 80
+          volumeMounts:
+            - name: local-repo
+              mountPath: /app/src/
+              subPath: backend/src/
+              readOnly: true
+      volumes:
+        - name: local-repo
+          hostPath:
+            path: /concord-fastapi

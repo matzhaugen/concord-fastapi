@@ -18,3 +18,8 @@ test-concord:
 
 test-backend:
 	cd backend && poetry run python -m pytest --pdb && cd ..
+
+kind:
+	./scripts/setup-local-cluster.sh &&\
+	 ./scripts/push-images-to-local-registry.sh &&\
+	 kubectl apply -f manifests/

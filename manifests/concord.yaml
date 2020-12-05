@@ -75,22 +75,6 @@ spec:
         - name: local-repo
           hostPath:
             path: /concord-fastapi
-# ---
-# apiVersion: networking.k8s.io/v1beta1
-# kind: Ingress
-# metadata:
-#   name: concord-ingress
-#   namespace: concord
-#   annotations:
-#     kubernetes.io/ingress.class: ambassador
-# spec:
-#   rules:
-#   - http:
-#       paths:
-#       - path: /
-#         backend:
-#           serviceName: concord
-#           servicePort: 8001
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping

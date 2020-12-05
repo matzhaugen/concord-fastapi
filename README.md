@@ -14,6 +14,7 @@ To see the api documentation go to your browser and type `localhost:8001/docs`.
 
 ## Example requests
 
+After starting the server (see section above),
 ```
 curl localhost:8001/tickers
 ```

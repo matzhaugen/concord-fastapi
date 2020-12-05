@@ -1,10 +1,18 @@
 from fastapi.testclient import TestClient
-
 from src.main import app
 import pandas as pd
 import numpy as np
 
 client = TestClient(app)
+ERROR_TOL = 0.01
+
+
+def test_portfolio():
+    response = client.post("/portfolio",
+                           json={"tickers": ["AA", "AXP"], "end_date": "1993-01-01"})
+    body = response.json()
+    assert (pd.Series(body['wealth']) >= 0).all()
+    assert (pd.DataFrame(body['weights']).T.sum(axis=1) - 1 < ERROR_TOL).all()
 
 
 def gen_mock_data():
@@ -22,19 +30,3 @@ def gen_mock_data():
 
 
 mock_df = gen_mock_data()
-
-
-def test_regularize():
-    response = client.post("/concord/",
-                           json={"covariance": [[1, 0], [0, 1]], "alpha": 0.2})
-    assert response.status_code == 200
-    assert set(response.json().keys()).intersection(['regularized'])
-
-
-def test_weights():
-    # prices = mock_df.loc[:'2009-09', ['AA', 'AXP']].to_numpy()
-    prices = mock_df.loc[:'2009-09', :].to_numpy()
-    returns = np.diff(prices, axis=0) / prices[:-1, :]
-    response = client.post("/weights",
-                           json={"returns": returns.tolist()})
-    assert "weights" in response.json()

@@ -12,7 +12,7 @@ def get_weights(prices, method='vanilla', estimation_horizon=225):
     start_invest_date = times[estimation_horizon + 1]
 
     times_int = (times - first_date).astype(int)
-    rebalance_dates = np.arange(start_invest_date, end_date, dtype='M8[M]')
+    rebalance_dates = np.arange(start_invest_date, end_date, dtype='M8[M]').astype("M8[D]")
 
     rebalance_int = (rebalance_dates - first_date).astype(int)
     rebalance_int = rebalance_int[rebalance_int > 0]

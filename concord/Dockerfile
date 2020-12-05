@@ -12,5 +12,5 @@ RUN apt update && apt install -y curl &&\
 COPY ./pyproject.toml ./app/poetry.lock* /app/
 
 RUN poetry install --no-root --no-dev
-
-COPY ./src /app
+WORKDIR /app/
+COPY ./src /app/src

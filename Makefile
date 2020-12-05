@@ -1,5 +1,6 @@
 build-concord:
 	docker build -t eu.gcr.io/experiment-ml-tk/concord concord
+
 run:
 	cd concord && docker run -it --rm -p 8000:80 -v concord:/app eu.gcr.io/experiment-ml-tk/concord /start-reload.sh && cd ..
 

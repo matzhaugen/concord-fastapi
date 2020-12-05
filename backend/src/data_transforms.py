@@ -1,9 +1,4 @@
-import numpy as np
-from numpy import dot
-import pandas as pd
-import time
-from performance_metrics import wealth_growth, realized_values
-import requests
+from src.performance_metrics import wealth_growth, realized_values
 
 debug = False
 

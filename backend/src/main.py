@@ -4,7 +4,6 @@ from pydantic import BaseModel
 
 import numpy as np
 import pandas as pd
-from concord import concord
 import src.concord_helper as concord_helper
 import src.data_transforms as data_transforms
 import src.db as db

@@ -35,7 +35,18 @@ There might be other ideas, like a Kubernetes Deployment with a pubsub subscribe
 
 This requires [KinD](https://kind.sigs.k8s.io/docs/user/quick-start/#installation).
 
-brew install kind
+Setup cluster with ingress from localhost.
+```
+make kind
+```
+This will take a few minutes.
+
+Then try
+```
+curl localhost/tickers
+curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio
+```
+
 
 ### GCS cloud run deployment
 Example commands to deploy the backend to a google cloud run dervice.

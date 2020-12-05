@@ -1,18 +1,22 @@
 import numpy as np
+
 from concord import concord, robust_selection
 
-def get_weights(prices, method='vanilla', estimation_horizon=225):
+
+def get_weights(prices, method="vanilla", estimation_horizon=225):
 
     prices = prices.dropna()
     returns_df = get_returns(prices)
     returns = returns_df.to_numpy()
-    times = returns_df.index.values.astype('datetime64[D]')
+    times = returns_df.index.values.astype("datetime64[D]")
     first_date = times[0]
     end_date = times[-1]
     start_invest_date = times[estimation_horizon + 1]
 
     times_int = (times - first_date).astype(int)
-    rebalance_dates = np.arange(start_invest_date, end_date, dtype='M8[M]').astype("M8[D]")
+    rebalance_dates = np.arange(start_invest_date, end_date, dtype="M8[M]").astype(
+        "M8[D]"
+    )
 
     rebalance_int = (rebalance_dates - first_date).astype(int)
     rebalance_int = rebalance_int[rebalance_int > 0]
@@ -20,10 +24,14 @@ def get_weights(prices, method='vanilla', estimation_horizon=225):
     n, p = returns.shape
     weights = np.zeros((n_periods, p), dtype=float)
 
-    if method == 'vanilla':
-        weights = predict_vanilla(n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225)
-    elif method == 'concord':
-        weights = predict_concord(n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225)
+    if method == "vanilla":
+        weights = predict_vanilla(
+            n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225
+        )
+    elif method == "concord":
+        weights = predict_concord(
+            n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225
+        )
 
     return weights, returns, times, rebalance_dates
 
@@ -38,66 +46,80 @@ def robust_concord_weights(returns, coef_mu=1):
     """
     # compute returns
 
-    
     optimal_lambda = robust_selection(returns)
     omega_hat, w_eff = get_weights_from_lambda(returns, optimal_lambda)
-    
+
     return (w_eff, optimal_lambda)
 
 
 def concord_weights(returns):
     weights, lambda_robust = robust_concord_weights(returns)
-    
+
     return np.array(weights)
 
 
-def predict_concord(n_periods, p, weights, returns,
-                    times_int,
-                    rebalance_int,
-                    rebalance_horizon=30,
-                    coef_mu=1,
-                    estimation_horizon=225):
+def predict_concord(
+    n_periods,
+    p,
+    weights,
+    returns,
+    times_int,
+    rebalance_int,
+    rebalance_horizon=30,
+    coef_mu=1,
+    estimation_horizon=225,
+):
 
     # for period in range(n_periods):
-    
+
     m_returns = []
     for period in range(n_periods):
         rb_int = rebalance_int[period]
-        m_returns.append(returns[times_int < rb_int, :][(-estimation_horizon - 1):])
+        m_returns.append(returns[times_int < rb_int, :][(-estimation_horizon - 1) :])
 
     for period in range(n_periods):
         rb_int = rebalance_int[period]
 
-        m_returns = returns[times_int < rb_int, :][(-estimation_horizon - 1):]
+        m_returns = returns[times_int < rb_int, :][(-estimation_horizon - 1) :]
         w = concord_weights(m_returns)
         weights[period, :] = w.ravel()
 
     return weights
 
 
-def predict_basic(n_periods, p, weights, returns,
-                  times_int,
-                  rebalance_int,
-                  rebalance_horizon=30,
-                  coef_mu=1,
-                  estimation_horizon=225):
+def predict_basic(
+    n_periods,
+    p,
+    weights,
+    returns,
+    times_int,
+    rebalance_int,
+    rebalance_horizon=30,
+    coef_mu=1,
+    estimation_horizon=225,
+):
 
     weights = np.ones((n_periods, p), dtype=float) / p
 
     return weights
 
 
-def predict_vanilla(n_periods, p, weights, returns,
-                    times_int,
-                    rebalance_int,
-                    rebalance_horizon=30,
-                    coef_mu=1,
-                    estimation_horizon=225):
+def predict_vanilla(
+    n_periods,
+    p,
+    weights,
+    returns,
+    times_int,
+    rebalance_int,
+    rebalance_horizon=30,
+    coef_mu=1,
+    estimation_horizon=225,
+):
 
     for period in range(n_periods):
         rb_int = rebalance_int[period]
 
-        m_returns = returns[times_int > rb_int][(-estimation_horizon - 1):]
+        m_returns = returns[times_int > rb_int][(-estimation_horizon - 1) :]
 
         s = np.cov(m_returns.T)
         w = np.linalg.solve(s, np.ones(p))
@@ -125,10 +147,11 @@ def get_w_eff(mu, omega, mu_star, vector=None):
     b = float(np.dot(omega_mu, mu))
     c = float(np.dot(np.dot(vector.T, omega), vector))
 
-    d = b * c - a**2
+    d = b * c - a ** 2
 
-    w_eff = (b * omega_one - a * omega_mu + mu_star *
-             (c * omega_mu - a * omega_one)) / d
+    w_eff = (
+        b * omega_one - a * omega_mu + mu_star * (c * omega_mu - a * omega_one)
+    ) / d
 
     return np.squeeze(w_eff)
 
@@ -169,6 +192,7 @@ def row_diff(x):
 
     return d
 
+
 def get_weights_from_lambda(returns, optimal_lambda):
     omega_hat = concord(returns, optimal_lambda).todense()
     vector = np.ones((omega_hat.shape[0], 1))
@@ -195,8 +219,10 @@ def cross_validate_sub(x_train, x_test, p, lambdas):
         rss[j] = np.linalg.norm(residuals) / float(n_test)
 
     if np.isnan(rss[0]):
-        raise ValueError("""Residuals after covariance estimate are zero.
-            Something is wrong""")
+        raise ValueError(
+            """Residuals after covariance estimate are zero.
+            Something is wrong"""
+        )
     return rss, sparsity
 
 
@@ -221,9 +247,9 @@ def col_std(x):
 
 
 # @njit
-def cross_validate(data,
-                   lambdas=np.exp(np.linspace(np.log(5e-3), np.log(5e-1), 25)),
-                   n_folds=10):
+def cross_validate(
+    data, lambdas=np.exp(np.linspace(np.log(5e-3), np.log(5e-1), 25)), n_folds=10
+):
     """Cross-Validate lambda parameter for covariance estimate
 
     Parameters
@@ -274,14 +300,16 @@ def cross_validate(data,
     print(mean_rss)
     if np.isnan(mean_rss[0]):
         from pdb import set_trace
+
         set_trace()
     lambda_1sd = np.max(lambdas[mean_rss < np.min(mean_rss) + std_rss])
 
     return lambda_min, lambda_1sd, mean_sparsity, std_sparsity, mean_rss, std_rss
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from test_main import mock_df
-    prices = mock_df.loc[:'2009-09', :].to_numpy()
+
+    prices = mock_df.loc[:"2009-09", :].to_numpy()
     returns = np.diff(prices, axis=0) / prices[:-1, :]
     concord_weights(np.array(returns))

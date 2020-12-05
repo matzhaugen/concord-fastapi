@@ -28,7 +28,6 @@ class PortfolioRequest(BaseModel):
 class CreatePortfolioResponse(BaseModel):
     weights: Dict[str, Dict[str, float]]
     wealth: Dict[str, float]
-    BACKEND_URL = "http://localhost:8000"
 
 
 @app.get("/tickers")

@@ -19,13 +19,8 @@ for remote_image in ${required_images[@]}; do
 
 	fi
 	echo "$Local image: ${local_image}"
-	has_local_image=$(docker images ${local_image} -q)
-	if [[ -n "${has_local_image}" ]]; then
-		echo "image exists in local registry"
-	else
-		echo "Tagging and pushing..."
-		docker tag $remote_image $local_image 
-		docker push $local_image
-	fi
+	echo "Tagging and pushing..."
+	docker tag $remote_image $local_image 
+	docker push $local_image
 
 done 

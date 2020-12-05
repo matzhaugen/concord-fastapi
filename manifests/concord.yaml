@@ -10,8 +10,8 @@ spec:
   type: ClusterIP
   ports:
     - name: http
-      port: 8001
-      targetPort: 81
+      port: 80
+      targetPort: 80
   selector:
     app: concord
 ---
@@ -38,18 +38,18 @@ spec:
           command: ['/start-reload.sh']
           env:
             - name: PORT
-              value: "81"
+              value: "80"
             - name: MODULE_NAME
               value: src.main
             - name: BACKEND_URL
-              value: http://localhost:80
+              value: http://localhost:81
             - name: PYTHONUNBUFFERED
               value: "1"
             - name: PYTHONIOENCODING
               value: "UTF-8"
           ports:
           - name: api
-            containerPort: 81
+            containerPort: 80
           volumeMounts:
             - name: local-repo
               mountPath: /app/src/
@@ -59,11 +59,13 @@ spec:
           image: localhost:5000/concord-fastapi_backend:latest
           command: ['/start-reload.sh']
           env:
+            - name: PORT
+              value: "81"
             - name: MODULE_NAME
               value: src.main
           ports:
           - name: api
-            containerPort: 80
+            containerPort: 81
           volumeMounts:
             - name: local-repo
               mountPath: /app/src/
@@ -97,5 +99,5 @@ metadata:
   namespace: concord
 spec:
   prefix: /
-  service: concord:8001
+  service: concord:80
   timeout_ms: 40000

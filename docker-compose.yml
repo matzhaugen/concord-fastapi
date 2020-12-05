@@ -8,9 +8,10 @@ services:
       - ./backend/src:/app/src/
     entrypoint: /start-reload.sh
     environment:
+      PORT: "81"
       MODULE_NAME: src.main
     ports:
-      - "8000:80"
+      - "81:80"
   concord:
     networks:
       - new
@@ -20,9 +21,9 @@ services:
     entrypoint: /start-reload.sh
     environment:
       MODULE_NAME: src.main
-      BACKEND_URL: http://backend:80
+      BACKEND_URL: http://backend:81
     ports:
-      - "8001:81"
+      - "80:80"
 
 networks:
   new:

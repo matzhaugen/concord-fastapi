@@ -31,9 +31,11 @@ Because the backend is just an http server this will not scale well. Instead a s
 
 There might be other ideas, like a Kubernetes Deployment with a pubsub subscriber and scaling by the number of undelivered pubsub messages.
 
-### Runing on a local cluster
+### Running on a local cluster
 
 This requires [KinD](https://kind.sigs.k8s.io/docs/user/quick-start/#installation).
+
+A nice-to-have is [k9s](https://github.com/derailed/k9s) for detailed monitoring of the cluster.
 
 Setup cluster with ingress from localhost.
 ```

@@ -22,7 +22,7 @@ services:
       MODULE_NAME: src.main
       BACKEND_URL: http://backend:80
     ports:
-      - "8001:80"
+      - "8001:81"
 
 networks:
   new:

@@ -1,0 +1,59 @@
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: concord
+  namespace: concord
+  labels:
+    app: concord
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8001
+      targetPort: 81
+  selector:
+    app: concord
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concord
+  namespace: concord
+  labels:
+    app: concord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: concord
+  template:
+    metadata:
+      labels:
+        app: concord
+    spec:
+      containers:
+        - name: concord
+          image: localhost:5000/concord-fastapi_concord:latest
+          env:
+            - name: PORT
+              value: "81"
+            - name: MODULE_NAME
+              value: src.main
+            - name: BACKEND_URL
+              value: http://backend:80
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: PYTHONIOENCODING
+              value: "UTF-8"
+          ports:
+          - name: api
+            containerPort: 81
+        - name: backend
+          image: localhost:5000/concord-fastapi_backend:latest
+          env:
+            - name: MODULE_NAME
+              value: src.main
+          ports:
+          - name: api
+            containerPort: 80

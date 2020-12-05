@@ -3,6 +3,8 @@
 Welcome!
 This repo is an app that will determine how a given portfolio should be weighted.
 
+Currently the main app is located in the `concord` folder, which relies on a backend in the `backend` folder. The backend will be replaced with something that scales.
+
 ## Run locally
 Make sure port 8000 and 8001 are free for use. Then, in the root of the repo, type
 ```
@@ -29,6 +31,11 @@ Because the backend is just an http server this will not scale well. Instead a s
 
 There might be other ideas, like a Kubernetes Deployment with a pubsub subscriber and scaling by the number of undelivered pubsub messages.
 
+### Runing on a local cluster
+
+This requires [KinD](https://kind.sigs.k8s.io/docs/user/quick-start/#installation).
+
+brew install kind
 
 ### GCS cloud run deployment
 Example commands to deploy the backend to a google cloud run dervice.

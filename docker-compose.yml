@@ -22,6 +22,7 @@ services:
     environment:
       MODULE_NAME: src.main
       BACKEND_URL: http://backend:81
+      SQL_ALCHEMY_DB_URI: postgresql://postgres:postgrespassword@postgres:5432/postgres
     ports:
       - "80:80"
   postgres:

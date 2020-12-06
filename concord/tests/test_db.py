@@ -1,30 +1,29 @@
 import pytest
-from src.config import Config
-from src.db.models import User
-from src.main import get_db
-from src.schemas import Item, User
+from src.db import crud
+from src.db.database import Base, SessionLocal
+from src.schemas import Item, UserCreate
 
 
+# Dependency
 @pytest.fixture(scope="session")
-def config():
-    yield Config()
+def db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @pytest.fixture(autouse=True)
 def truncate_all_tables_between_each_test(db):
-    db.truncate_all()
-
-
-@pytest.fixture(scope="session")
-def db(config):
-    yield get_db()
+    for table in reversed(Base.metadata.sorted_tables):
+        db.execute(table.delete())
 
 
 def test_insert_user(db):
-    item = Item(title="hi", description="world", id=2, owner_id="1")
-    user = User(id=1, is_active=True, items=[item])
+    user_create = UserCreate(email="a@b.c", password="secret")
 
-    db.create_user(user)
-    db.create_user_item(item)
-    user = db.get_users()
-    assert user.first().id == 1
+    crud.create_user(db, user_create)
+    user_down = crud.get_users(db)[0]
+
+    assert user_down.id > 0

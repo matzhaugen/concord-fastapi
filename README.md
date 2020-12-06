@@ -22,7 +22,7 @@ curl localhost:80/tickers
 ```
 
 ```
-curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost:8001/portfolio
+curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost:80/portfolio
 ```
 
 ## How to scale this

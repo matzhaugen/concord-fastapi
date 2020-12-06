@@ -64,3 +64,8 @@ class Database(_DB):
         if with_for_update:
             query = query.with_for_update(of=User)
         return query.filter_by(id=id).first()
+
+    @with_session
+    def insert_new_user(self, user: User, session: Optional[Session] = None) -> User:
+        session.add(user)
+        return user

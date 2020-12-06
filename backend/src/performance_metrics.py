@@ -27,7 +27,7 @@ def turnover(returns, times, rebalance_dates, n_periods, weights):
     purchased or sold over each trading period.
     """
     t = times
-    r1 = (returns + 1)
+    r1 = returns + 1
     rd = rebalance_dates
     p = weights.shape[1]
 
@@ -52,11 +52,7 @@ def turnover(returns, times, rebalance_dates, n_periods, weights):
     return turnover
 
 
-def realized_values(weights,
-                    returns,
-                    times,
-                    rebalance_dates,
-                    riskfree_rate=0.05):
+def realized_values(weights, returns, times, rebalance_dates, riskfree_rate=0.05):
     """The workhorse for realized returns, risk and sharpe.
     Compute all of these at the same time to save computation
     time
@@ -85,18 +81,14 @@ def realized_values(weights,
         ret_vec[idx] = rwts
 
     realized_return = np.mean(ret_mean)
-    realized_risk = np.sqrt(np.mean(ret_square) - realized_return**2)
+    realized_risk = np.sqrt(np.mean(ret_square) - realized_return ** 2)
     realized_return_vector = ret_vec
     sharpe = (realized_return - riskfree_rate) / realized_return
 
     return realized_return, realized_risk, realized_return_vector, sharpe
 
 
-def wealth_growth(returns,
-                  times,
-                  rebalance_dates,
-                  realized_return_vector,
-                  weights):
+def wealth_growth(returns, times, rebalance_dates, realized_return_vector, weights):
     """Normalized wealth growth: Accumulated wealth derived from the
     portfolio over the trading period when the initial budget is
     normalized to one. Note that both transaction costs and borrowing
@@ -106,11 +98,9 @@ def wealth_growth(returns,
     transaction_cost_rate = 0.005
     borrowing_daily_rate = borrowing_rate / 250  # Adjust from annual to daily
     n_periods = len(weights)
-    n_holding_days = np.diff(
-        rebalance_dates.astype('datetime64[D]')).astype(int)
+    n_holding_days = np.diff(rebalance_dates.astype("datetime64[D]")).astype(int)
     borrowing_cost = np.zeros(n_periods)
-    investing_start_date = rebalance_dates[0].astype(
-        'datetime64[D]')  # first inverstment
+    investing_start_date = rebalance_dates[0].astype("datetime64[D]")  # first inverstment
     invst_bool = investing_start_date <= times
     investment_times = times[invst_bool]
     n_investement_timesteps = len(investment_times)
@@ -123,8 +113,7 @@ def wealth_growth(returns,
         else:
             weights_lastk = weights[k - 1]
             negative_weights = weights_lastk[weights_lastk < 0]
-            coef = np.power(1 + borrowing_daily_rate,
-                            n_holding_days[k - 1]) - 1
+            coef = np.power(1 + borrowing_daily_rate, n_holding_days[k - 1]) - 1
 
             if negative_weights.size == 0:
                 borrowing_cost[k] = 0
@@ -133,7 +122,8 @@ def wealth_growth(returns,
 
     # Get transaction costs
     transaction_cost = transaction_cost_rate * turnover(
-        returns[invst_bool, :], investment_times, rebalance_dates, n_periods, weights)
+        returns[invst_bool, :], investment_times, rebalance_dates, n_periods, weights
+    )
 
     gain = 1 + realized_return_vector
 
@@ -143,7 +133,7 @@ def wealth_growth(returns,
         is_trading_day = np.any(np.isin(day, rebalance_dates))
         if is_trading_day:
 
-            gain[t - 1] -= (transaction_cost[period] + borrowing_cost[period])
+            gain[t - 1] -= transaction_cost[period] + borrowing_cost[period]
 
             period += 1
         if t == 0:

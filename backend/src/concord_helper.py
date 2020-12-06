@@ -14,9 +14,7 @@ def get_weights(prices, method="vanilla", estimation_horizon=225):
     start_invest_date = times[estimation_horizon + 1]
 
     times_int = (times - first_date).astype(int)
-    rebalance_dates = np.arange(start_invest_date, end_date, dtype="M8[M]").astype(
-        "M8[D]"
-    )
+    rebalance_dates = np.arange(start_invest_date, end_date, dtype="M8[M]").astype("M8[D]")
 
     rebalance_int = (rebalance_dates - first_date).astype(int)
     rebalance_int = rebalance_int[rebalance_int > 0]
@@ -25,13 +23,9 @@ def get_weights(prices, method="vanilla", estimation_horizon=225):
     weights = np.zeros((n_periods, p), dtype=float)
 
     if method == "vanilla":
-        weights = predict_vanilla(
-            n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225
-        )
+        weights = predict_vanilla(n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225)
     elif method == "concord":
-        weights = predict_concord(
-            n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225
-        )
+        weights = predict_concord(n_periods, p, weights, returns, times_int, rebalance_int, 30, 1, 225)
 
     return weights, returns, times, rebalance_dates
 
@@ -149,9 +143,7 @@ def get_w_eff(mu, omega, mu_star, vector=None):
 
     d = b * c - a ** 2
 
-    w_eff = (
-        b * omega_one - a * omega_mu + mu_star * (c * omega_mu - a * omega_one)
-    ) / d
+    w_eff = (b * omega_one - a * omega_mu + mu_star * (c * omega_mu - a * omega_one)) / d
 
     return np.squeeze(w_eff)
 
@@ -247,9 +239,7 @@ def col_std(x):
 
 
 # @njit
-def cross_validate(
-    data, lambdas=np.exp(np.linspace(np.log(5e-3), np.log(5e-1), 25)), n_folds=10
-):
+def cross_validate(data, lambdas=np.exp(np.linspace(np.log(5e-3), np.log(5e-1), 25)), n_folds=10):
     """Cross-Validate lambda parameter for covariance estimate
 
     Parameters

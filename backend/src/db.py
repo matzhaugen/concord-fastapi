@@ -1,7 +1,8 @@
-import pandas as pd
-import time
-import sys
 import os
+import sys
+import time
+
+import pandas as pd
 
 debug = False
 

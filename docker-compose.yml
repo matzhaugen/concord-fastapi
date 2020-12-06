@@ -11,7 +11,7 @@ services:
       PORT: "81"
       MODULE_NAME: src.main
     ports:
-      - "81:80"
+      - "81:81"
   concord:
     networks:
       - new

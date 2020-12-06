@@ -1,47 +1,26 @@
-from __future__ import annotations
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
-from dataclasses import dataclass, field
-from typing import List, Optional
-
-from sqlalchemy import Column, ForeignKey, Integer, String, Table
-from sqlalchemy.orm import registry, relationship
-
-mapper_registry = registry()
+from .database import Base
 
 
-@mapper_registry.mapped
-@dataclass
-class User:
-    __table__ = Table(
-        "user",
-        mapper_registry.metadata,
-        Column("id", Integer, primary_key=True),
-        Column("name", String(50)),
-        Column("fullname", String(50)),
-        Column("nickname", String(12)),
-    )
-    id: int = field(init=False)
-    name: Optional[str] = None
-    fullname: Optional[str] = None
-    nickname: Optional[str] = None
-    addresses: List[Address] = field(default_factory=list)
+class User(Base):
+    __tablename__ = "users"
 
-    __mapper_args__ = {"properties": {"addresses": relationship("Address")}}
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    is_active = Column(Boolean, default=True)
+
+    items = relationship("Item", back_populates="owner")
 
 
-@mapper_registry.mapped
-@dataclass
-class Address:
-    __table__ = Table(
-        "address",
-        mapper_registry.metadata,
-        Column("id", Integer, primary_key=True),
-        Column("user_id", Integer, ForeignKey("user.id")),
-        Column("email_address", String(50)),
-    )
-    id: int = field(init=False)
-    user_id: int = field(init=False)
-    email_address: Optional[str] = None
+class Item(Base):
+    __tablename__ = "items"
 
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    description = Column(String, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"))
 
-Base = mapper_registry.generate_base()
+    owner = relationship("User", back_populates="items")

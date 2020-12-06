@@ -1,10 +1,10 @@
 import requests
-from src.config import environment as env
+from src.config import config
 
 
 class PortfolioService:
     def __init__(self):
-        self.backend_url = env.backend_url
+        self.backend_url = config.backend_url
 
     def get_portfolio(self, tickers, end_date):
 

@@ -6,19 +6,19 @@ This repo is an app that will determine how a given portfolio should be weighted
 Currently the main app is located in the `concord` folder, which relies on a backend in the `backend` folder. The backend will be replaced with something that scales.
 
 ## Run locally
-Make sure port 8000 and 8001 are free for use. Then, in the root of the repo, type
+Make sure port 80 and 81 are free for use. Then, in the root of the repo, type
 ```
 make server
 ```
-Now your server is running on 8001 with a backend on 8000.
+Now your server is running on 80 with a backend on 81.
 
-To see the api documentation go to your browser and type `localhost:8001/docs`.
+To see the api documentation go to your browser and type `localhost:80/docs`.
 
 ## Example requests
 
 After starting the server (see section above),
 ```
-curl localhost:8001/tickers
+curl localhost:80/tickers
 ```
 
 ```

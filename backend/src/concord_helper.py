@@ -295,11 +295,3 @@ def cross_validate(data, lambdas=np.exp(np.linspace(np.log(5e-3), np.log(5e-1), 
     lambda_1sd = np.max(lambdas[mean_rss < np.min(mean_rss) + std_rss])
 
     return lambda_min, lambda_1sd, mean_sparsity, std_sparsity, mean_rss, std_rss
-
-
-if __name__ == "__main__":
-    from test_main import mock_df
-
-    prices = mock_df.loc[:"2009-09", :].to_numpy()
-    returns = np.diff(prices, axis=0) / prices[:-1, :]
-    concord_weights(np.array(returns))

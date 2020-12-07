@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from fastapi.testclient import TestClient
+from pandas._typing import DataFrame
 from src.main import app
 
 client = TestClient(app)
@@ -14,7 +15,7 @@ def test_portfolio():
     assert (pd.DataFrame(body["weights"]).T.sum(axis=1) - 1 < ERROR_TOL).all()
 
 
-def gen_mock_data():
+def gen_mock_data() -> DataFrame:
     mock_index = np.arange(np.datetime64("2009-01-01"), np.datetime64("2012-01-01"))
     stocks = [
         "AA",

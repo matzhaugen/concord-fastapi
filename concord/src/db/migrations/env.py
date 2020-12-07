@@ -2,7 +2,8 @@ import os
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import create_engine
+from sqlalchemy import engine_from_config, pool
+from src.config import config as app_config
 from src.db.models import Base
 
 # this is the Alembic Config object, which provides
@@ -17,20 +18,15 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 target_metadata = Base.metadata
+# Need to escape '%' in the db uri in case this is part of the password
+# (see https://alembic.sqlalchemy.org/en/latest/api/config.html#alembic.config.Config.set_main_option)
+db_url_escaped = app_config.sql_alchemy_db_uri.replace("%", "%%")
+config.set_main_option("sqlalchemy.url", db_url_escaped)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-
-
-def get_url():
-    return "postgresql://%s:%s@%s/%s" % (
-        os.getenv("DB_USER", "postgres"),
-        os.getenv("DB_PASSWORD", "postgrespassword"),
-        os.getenv("DB_HOST", "localhost:5432"),
-        os.getenv("DB_NAME", "postgres"),
-    )
 
 
 def run_migrations_offline():
@@ -45,7 +41,7 @@ def run_migrations_offline():
     script output.
 
     """
-    url = get_url()
+    url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -64,7 +60,11 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    connectable = create_engine(get_url())
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
 
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)

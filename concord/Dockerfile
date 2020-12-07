@@ -9,8 +9,9 @@ RUN apt update && apt install -y curl &&\
 
 
 # # Copy using poetry.lock* in case it doesn't exist yet
-COPY ./pyproject.toml ./app/poetry.lock* /app/
+COPY ./pyproject.toml ./alembic.ini ./poetry.lock* /app/
 
 RUN poetry install --no-root --no-dev
 WORKDIR /app/
+COPY ./scripts/prestart.sh /app/prestart.sh
 COPY ./src /app/src

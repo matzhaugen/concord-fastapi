@@ -18,6 +18,7 @@ services:
     build: concord
     volumes:
       - ./concord/src:/app/src/
+      - ./concord/scripts/prestart.sh:/app/prestart.sh
     entrypoint: /start-reload.sh
     environment:
       MODULE_NAME: src.main

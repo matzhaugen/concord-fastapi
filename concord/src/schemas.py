@@ -3,6 +3,11 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
+class Stock(BaseModel):
+    name: str
+    values: float
+
+
 class ItemBase(BaseModel):
     title: str
     description: Optional[str] = None

@@ -1,7 +1,7 @@
 import pytest
 from src.db import crud
 from src.db.database import Base, SessionLocal
-from src.schemas import Item, UserCreate
+from src.schemas import UserCreate
 
 
 # Dependency

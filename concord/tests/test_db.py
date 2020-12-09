@@ -1,8 +1,13 @@
+import datetime
+import time
+
+import numpy as np
 import pytest
+from pandas import Series
 from src.db import crud
 from src.db.database import Base, SessionLocal
 from src.mock_db import get_data
-from src.schemas import UserCreate
+from src.schemas import StockDate, UserCreate
 
 
 # Dependency
@@ -32,8 +37,18 @@ def test_insert_user(db):
 
 def test_insert_stocks(db):
     data_df = get_data()
-    from pdb import set_trace
+    dates = data_df.index.values.astype(datetime.date)
+    data_df.index.values.astype(datetime.date)
+    stock_data = []
+    start_time = time.time()
+    for stock_name in data_df:
+        for date, price in zip(dates, data_df[stock_name]):
+            stock_data.append(StockDate(ticker=stock_name, date=date, price=price))
+    print(f"Created input in {time.time() - start_time} seconds")
+    crud.insert_stocks(db, stock_data)
 
-    set_trace()
-    crud.create_stock()
-    pass
+    stock = crud.retrieve_stock(db, ticker="VZ")
+    srs = Series(
+        index=[s.date for s in stock], data=[s.price for s in stock], name="VZ"
+    )
+    np.testing.assert_array_equal(srs.values, data_df["VZ"].values)

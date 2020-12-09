@@ -1,11 +1,13 @@
+from datetime import date
 from typing import List, Optional
 
 from pydantic import BaseModel
 
 
-class Stock(BaseModel):
-    name: str
-    values: float
+class StockDate(BaseModel):
+    ticker: str
+    date: date
+    price: float
 
 
 class ItemBase(BaseModel):

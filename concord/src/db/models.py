@@ -26,10 +26,9 @@ class Item(Base):
     owner = relationship("User", back_populates="items")
 
 
-class Stock(Base):
+class Stocks(Base):
     __tablename__ = "stocks"
 
-    id = Column(Integer, primary_key=True, index=True)
-    ticker = Column(String, index=True)
+    ticker = Column(String, primary_key=True, index=True)
     date = Column(Date, primary_key=True)
     price = Column(Float)

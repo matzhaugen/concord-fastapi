@@ -1,7 +1,37 @@
+import time
+from datetime import date
+from typing import List, Optional
+
+from pandas import Series
 from sqlalchemy.orm import Session
 from src import schemas
 
 from . import models
+
+
+def insert_stocks(db: Session, stock_data: List[schemas.StockDate]):
+    stock_rows = []
+    start_time = time.time()
+    for stock_row in stock_data:
+        stock_rows.append(
+            models.Stocks(
+                ticker=stock_row.ticker, date=stock_row.date, price=stock_row.price
+            )
+        )
+    print(f"Created input in {time.time() - start_time} seconds")
+    start_time = time.time()
+    db.add_all(stock_rows)
+    print(f"Created input in {time.time() - start_time} seconds")
+    db.commit()
+
+
+def retrieve_stock(
+    db: Session,
+    ticker: str,
+    date_min: Optional[date] = None,
+    date_max: Optional[date] = None,
+):
+    return db.query(models.Stocks).filter(models.Stocks.ticker == ticker)
 
 
 def get_user(db: Session, user_id: int):

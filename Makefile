@@ -2,7 +2,7 @@ portfolio:
 	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio
 
 server:
-	docker-compose up --abort-on-container-exit
+	docker-compose down -v && docker-compose up --abort-on-container-exit
 
 down:
 	docker-compose down -v

@@ -3,7 +3,7 @@ import datetime
 import numpy as np
 import pandas as pd
 import pytest
-from src.db import crud
+from src.db import crud, models
 from src.db.database import Base, SessionLocal
 from src.mock_db import get_data
 from src.schemas import UserCreate
@@ -24,6 +24,15 @@ def mock_data():
     yield get_data(end_date=END_DATE)
 
 
+@pytest.fixture(scope="session")
+def insert_test_data(db, mock_data):
+    tickers = ["AA", "VZ"]
+    db_input = crud.df_to_db_input(mock_data[tickers])
+    crud.insert_stocks(db, db_input, overwrite=True)
+    yield None
+    db.execute(Base.metadata.tables["stocks"].delete())
+
+
 @pytest.fixture(autouse=True)
 def truncate_all_tables_between_each_test(db):
     for table in reversed(Base.metadata.sorted_tables):
@@ -41,7 +50,7 @@ def test_insert_user(db):
     assert user_down.id > 0
 
 
-def test_get_stocks(db, mock_data):
+def test_get_stocks(db, insert_test_data, mock_data):
 
     tickers = ["AA", "VZ"]
     stocks_df = crud.retrieve_stocks(db, tickers=tickers, end_date=END_DATE)

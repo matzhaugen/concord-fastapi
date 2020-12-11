@@ -53,4 +53,4 @@ def ingest_test_data(config):
 if __name__ == "__main__":
     # asyncio.run(migrate_db(config))
     setup_schema(config)
-    ingest_test_data(config)
+    # ingest_test_data(config)

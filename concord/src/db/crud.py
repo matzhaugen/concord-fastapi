@@ -10,7 +10,14 @@ from src import schemas
 from . import models
 
 
-def _db_result_to_df(db_result):
+def df_to_db_input(df):
+    df.index = df.index.strftime("%Y-%m-%d")
+    df = df.reset_index()
+    df = df.melt(id_vars=["date"], value_name="price")
+    return df.to_dict("records")
+
+
+def _db_output_to_df(db_result):
     df = pd.DataFrame(
         data=[(s.date, s.ticker, s.price) for s in db_result],
         columns=["date", "ticker", "price"],
@@ -60,7 +67,7 @@ def retrieve_stocks(
 
     result = result.all()
 
-    return _db_result_to_df(result)
+    return _db_output_to_df(result)
 
 
 def get_user(db: Session, user_id: int):

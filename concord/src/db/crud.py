@@ -2,36 +2,65 @@ import time
 from datetime import date
 from typing import List, Optional
 
-from pandas import Series
+import pandas as pd
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from src import schemas
 
 from . import models
 
 
-def insert_stocks(db: Session, stock_data: List[schemas.StockDate]):
-    stock_rows = []
-    start_time = time.time()
-    for stock_row in stock_data:
-        stock_rows.append(
-            models.Stocks(
-                ticker=stock_row.ticker, date=stock_row.date, price=stock_row.price
-            )
-        )
-    print(f"Created input in {time.time() - start_time} seconds")
-    start_time = time.time()
-    db.add_all(stock_rows)
-    print(f"Created input in {time.time() - start_time} seconds")
+def _db_result_to_df(db_result):
+    df = pd.DataFrame(
+        data=[(s.date, s.ticker, s.price) for s in db_result],
+        columns=["date", "ticker", "price"],
+    )
+    df = df.pivot(columns=["ticker"], index="date", values="price")
+    df.index = pd.to_datetime(df.index)
+    return df
+
+
+def insert_stocks_bulk(
+    db: Session, stock_data: List[schemas.StockDate], overwrite=True
+):
+
+    db.bulk_insert_mappings(
+        models.Stocks,
+        stock_data,
+    )
     db.commit()
 
 
-def retrieve_stock(
+def insert_stocks(db: Session, stock_data: List[schemas.StockDate], overwrite=True):
+    start_time = time.time()
+    stmt = insert(models.Stocks).values(stock_data)
+    if overwrite:
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["ticker", "date"], set_={"price": stmt.excluded.price}
+        )
+    else:
+        stmt = stmt.on_conflict_do_nothing()
+    db.connection().execute(stmt)
+    print(f"Upserted {len(stock_data)} rows in {time.time() - start_time} seconds")
+
+
+def retrieve_stocks(
     db: Session,
-    ticker: str,
-    date_min: Optional[date] = None,
-    date_max: Optional[date] = None,
-):
-    return db.query(models.Stocks).filter(models.Stocks.ticker == ticker)
+    tickers: List[str],
+    end_date: Optional[date] = None,
+    start_date: Optional[date] = None,
+) -> pd.DataFrame:
+    result = db.query(models.Stocks).filter(models.Stocks.ticker.in_(tickers))
+
+    if end_date:
+        result = result.filter(models.Stocks.date <= end_date)
+
+    if start_date:
+        result = result.filter(models.Stocks.date >= start_date)
+
+    result = result.all()
+
+    return _db_result_to_df(result)
 
 
 def get_user(db: Session, user_id: int):

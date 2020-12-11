@@ -10,8 +10,6 @@ from src.db import crud, models
 from src.db.database import SessionLocal, engine
 from src.service import PortfolioService
 
-models.Base.metadata.create_all(bind=engine)
-
 app = FastAPI()
 
 # Dependency
@@ -62,7 +60,9 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
+def create_item_for_user(
+    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+):
     return crud.create_user_item(db=db, item=item)
 
 
@@ -84,8 +84,12 @@ def tickers():
 
 
 @app.post("/portfolio", response_model=CreatePortfolioResponse)
-def portfolio(request: PortfolioRequest, portfolio_service: PortfolioService = Depends()):
+def portfolio(
+    request: PortfolioRequest, portfolio_service: PortfolioService = Depends()
+):
 
-    result = portfolio_service.get_portfolio(request.tickers, request.end_date.strftime("%Y-%m-%d"))
+    result = portfolio_service.get_portfolio(
+        request.tickers, request.end_date.strftime("%Y-%m-%d")
+    )
 
     return result

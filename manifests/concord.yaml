@@ -57,6 +57,8 @@ spec:
               value: src.main
             - name: BACKEND_URL
               value: http://localhost:81
+            - name: OPENFAAS_URL
+              value: http://gateway.openfaas:8080
             - name: SQL_ALCHEMY_DB_URI
               value: postgresql://postgres:postgrespassword@localhost:5432/postgres
             - name: PYTHONUNBUFFERED

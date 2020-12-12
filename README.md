@@ -31,6 +31,31 @@ Because the backend is just an http server this will not scale well. Instead a s
 
 There might be other ideas, like a Kubernetes Deployment with a pubsub subscriber and scaling by the number of undelivered pubsub messages.
 
+## Developing using openfaas functions
+
+```
+faas build -f of-concord.yml # build the openfaas function
+make build # build the 
+make server
+```
+
+The first step will make sure that the latest files from the `of-concord` folder is copied into the `build` folder with the latest dockerfile which is the target of the docker-compose file. The `make build` step will then build the docker-compose images do you can develop locally. `make server` will launch the docker-compose server so you can test with direct curl, pytest or with a full blown front end.
+
+## Testing the app
+
+WORK IN PROGRESS
+This is the gold standard, or goal
+```
+cd concord
+poetry run python -m pytest tests/ -s --pdb
+```
+
+This is the current state
+```
+poetry run python -m pytest tests/test_main.py -s --pdb -k test_fast_portfolio
+```
+
+
 ### Running on a local cluster
 
 This requires [KinD](https://kind.sigs.k8s.io/docs/user/quick-start/#installation).

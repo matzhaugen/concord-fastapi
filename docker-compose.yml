@@ -7,7 +7,8 @@ services:
     ports:
       - "5001:5000"
     volumes:
-      - ./build/of-concord/function:/home/app/function/
+      - ./of-concord/handler.py:/home/app/function/handler.py
+      - ./template/python3-http-concord/index.py:/home/app/index.py
   backend:
     networks:
       - new

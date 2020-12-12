@@ -3,6 +3,9 @@ TAG=1
 portfolio:
 	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio
 
+fast-portfolio:
+	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1991-01-01"}' localhost/fast-portfolio
+
 server:
 	docker-compose down -v && docker-compose up --abort-on-container-exit
 

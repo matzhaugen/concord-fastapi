@@ -14,4 +14,3 @@ kubectl port-forward svc/gateway -n openfaas 8086:8080
 echo "OpenFaaS url: ${OPENFAAS_URL}"
 echo "OpenFaaS admin password: ${PASSWORD}"
 echo -n ${OPENFAAS_PASSWORD} | faas-cli login -g ${OPENFAAS_URL} -u admin --password-stdin
-# kubectl apply -f manifests/of-mapping.yaml

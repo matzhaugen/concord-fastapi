@@ -13,10 +13,9 @@ from src import schemas
 from src.config import config
 from src.db import crud, models
 from src.db.database import SessionLocal, engine
-from src.service import PortfolioService
+from src.service import PortfolioService, call_of_concord
 
 app = FastAPI()
-loop = asyncio.get_running_loop()
 
 # Dependency
 def get_db():
@@ -27,33 +26,12 @@ def get_db():
         db.close()
 
 
-def to_camel(string: str) -> str:
-    result = "".join(word.capitalize() for word in string.split("_"))
-    result = result[0].lower() + result[1:]
-    return result
-
-
-class PortfolioRequest(BaseModel):
-    tickers: List[str]
-    end_date: date
-
-    class Config:
-        schema_extra = {"example": {"tickers": ["AA", "AXP"], "endDate": "1993-01-01"}}
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-async def call_of_concord(aio_session, url, data):
-    async with aio_session.post(url, json=data) as resp:
-        return await resp.json()
-
-
 @app.get("/async-hello")
 async def async_hello():
     url = f"{config.openfaas_url}/function/of-concord"
 
     async with aiohttp.ClientSession() as aio_session:
-        aws = [call_of_concord(aio_session, url, {"input": i}) for i in range(100)]
+        aws = [call_of_concord(aio_session, url, {"input": i}) for i in range(10)]
         resp_list = await asyncio.gather(*aws)  # where the magic happens
         final_resp = {f"{i}": res for i, res in enumerate(resp_list)}
 
@@ -83,9 +61,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
-):
+def create_item_for_user(user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
     return crud.create_user_item(db=db, item=item)
 
 
@@ -108,25 +84,19 @@ def tickers():
 
 @app.post("/fast-portfolio", response_model=CreatePortfolioResponse)
 def portfolio_fast(
-    request: PortfolioRequest,
+    request: schemas.PortfolioRequest,
     portfolio_service: PortfolioService = Depends(),
     db: Session = Depends(get_db),
 ):
 
-    result = portfolio_service.get_portfolio_fast(
-        db, request.tickers, request.end_date.strftime("%Y-%m-%d")
-    )
+    result = portfolio_service.get_portfolio_fast(db, request.tickers, request.end_date)
 
     return result
 
 
 @app.post("/portfolio", response_model=CreatePortfolioResponse)
-def portfolio(
-    request: PortfolioRequest, portfolio_service: PortfolioService = Depends()
-):
+def portfolio(request: schemas.PortfolioRequest, portfolio_service: PortfolioService = Depends()):
 
-    result = portfolio_service.get_portfolio(
-        request.tickers, request.end_date.strftime("%Y-%m-%d")
-    )
+    result = portfolio_service.get_portfolio(request.tickers, request.end_date.strftime("%Y-%m-%d"))
 
     return result

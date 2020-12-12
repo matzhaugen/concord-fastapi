@@ -31,13 +31,13 @@ nodes:
         node-labels: "ingress-ready=true"
 # port forward 8001 on the host to 8001 on this node
   extraPortMappings:
-  - containerPort: 80
+  - containerPort: 80 # for app testing
     hostPort: 80
     protocol: TCP
-  - containerPort: 443
+  - containerPort: 443 # not currently used
     hostPort: 443
     protocol: TCP
-  - containerPort: 31112
+  - containerPort: 31112 # for openfaas testing
     hostPort: 31112
     protocol: TCP
   # add a mount from /path/to/my/files on the host to /files on the node

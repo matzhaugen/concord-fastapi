@@ -1,3 +1,5 @@
+TAG=1
+.PHONY: build
 portfolio:
 	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio
 
@@ -9,15 +11,15 @@ down:
 build:
 	docker-compose build
 of:
-	./setup-openfaas.sh
+	faas up -f of-concord.yml
 ofow:
 	echo $(kubectl -n openfaas get secret basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode)
 
 push-to-local-registry:
-	docker tag concord-fastapi_concord localhost:5000/concord-fastapi_concord:latest &&\
-	docker tag concord-fastapi_backend localhost:5000/concord-fastapi_backend:latest &&\
-	docker push localhost:5000/concord-fastapi_concord:latest &&\
-	docker push localhost:5000/concord-fastapi_backend:latest
+	docker tag concord-fastapi_concord localhost:5000/concord-fastapi_concord:${TAG} &&\
+	docker tag concord-fastapi_backend localhost:5000/concord-fastapi_backend:${TAG} &&\
+	docker push localhost:5000/concord-fastapi_concord:${TAG} &&\
+	docker push localhost:5000/concord-fastapi_backend:${TAG}
 
 test-concord:
 	cd concord && poetry run python -m pytest --pdb && cd ..
@@ -30,4 +32,3 @@ kind:
 	 ./scripts/push-images-to-local-registry.sh &&\
 	 ./setup-openfaas.sh &&\
 	 kubectl apply -f manifests/concord.yaml
-

@@ -48,7 +48,7 @@ spec:
               subPath: concord/src/flatData.csv
               readOnly: true
         - name: concord
-          image: localhost:5000/concord-fastapi_concord:latest
+          image: localhost:5000/concord-fastapi_concord:1
           command: ['/start-reload.sh']
           env:
             - name: PORT
@@ -98,6 +98,6 @@ metadata:
   name: concord-ingress
   namespace: concord
 spec:
-  prefix: /api/v1
+  prefix: /
   service: concord:80
   timeout_ms: 40000

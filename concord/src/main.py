@@ -1,6 +1,10 @@
+import asyncio
+import concurrent.futures
 from datetime import date
 from typing import Dict, List
 
+import aiohttp
+import requests
 import src.mock_db as db
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
@@ -11,7 +15,8 @@ from src.db import crud, models
 from src.db.database import SessionLocal, engine
 from src.service import PortfolioService
 
-app = FastAPI(root_path="/api/v1")
+app = FastAPI()
+loop = asyncio.get_running_loop()
 
 # Dependency
 def get_db():
@@ -38,12 +43,21 @@ class PortfolioRequest(BaseModel):
         allow_population_by_field_name = True
 
 
-@app.get("/hello-of")
-def hello_of():
-    import requests
+async def call_of_concord(aio_session, url, data):
+    async with aio_session.post(url, json=data) as resp:
+        return await resp.json()
 
-    res = requests.get(f"{config.openfaas_url}/of-concord")
-    return res.json
+
+@app.get("/async-hello")
+async def async_hello():
+    url = f"{config.openfaas_url}/function/of-concord"
+
+    async with aiohttp.ClientSession() as aio_session:
+        aws = [call_of_concord(aio_session, url, {"input": i}) for i in range(100)]
+        resp_list = await asyncio.gather(*aws)  # where the magic happens
+        final_resp = {f"{i}": res for i, res in enumerate(resp_list)}
+
+    return final_resp
 
 
 @app.post("/users/", response_model=schemas.User)

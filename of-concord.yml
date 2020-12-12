@@ -4,7 +4,7 @@ provider:
   gateway: http://localhost:31112
 functions:
   of-concord:
-    lang: python3-http-debian
+    lang: python3-http-concord
     handler: ./of-concord
     image: localhost:5000/of-concord:latest
 

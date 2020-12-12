@@ -13,5 +13,5 @@ COPY ./pyproject.toml ./alembic.ini ./poetry.lock* /app/
 
 RUN poetry install --no-root --no-dev
 WORKDIR /app/
-COPY ./scripts/prestart.sh /app/prestart.sh
+COPY ./scripts /app
 COPY ./src /app/src

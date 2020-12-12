@@ -83,7 +83,9 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
+def create_item_for_user(
+    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+):
     return crud.create_user_item(db=db, item=item)
 
 
@@ -104,9 +106,27 @@ def tickers():
     return {"tickers": prices.columns.tolist()}
 
 
-@app.post("/portfolio", response_model=CreatePortfolioResponse)
-def portfolio(request: PortfolioRequest, portfolio_service: PortfolioService = Depends()):
+@app.post("/fast-portfolio", response_model=CreatePortfolioResponse)
+def portfolio_fast(
+    request: PortfolioRequest,
+    portfolio_service: PortfolioService = Depends(),
+    db: Session = Depends(get_db),
+):
 
-    result = portfolio_service.get_portfolio(request.tickers, request.end_date.strftime("%Y-%m-%d"))
+    result = portfolio_service.get_portfolio_fast(
+        db, request.tickers, request.end_date.strftime("%Y-%m-%d")
+    )
+
+    return result
+
+
+@app.post("/portfolio", response_model=CreatePortfolioResponse)
+def portfolio(
+    request: PortfolioRequest, portfolio_service: PortfolioService = Depends()
+):
+
+    result = portfolio_service.get_portfolio(
+        request.tickers, request.end_date.strftime("%Y-%m-%d")
+    )
 
     return result

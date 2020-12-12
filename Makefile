@@ -8,6 +8,10 @@ down:
 	docker-compose down -v
 build:
 	docker-compose build
+of:
+	./setup-openfaas.sh
+ofow:
+	echo $(kubectl -n openfaas get secret basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode)
 
 push-to-local-registry:
 	docker tag concord-fastapi_concord localhost:5000/concord-fastapi_concord:latest &&\
@@ -24,4 +28,5 @@ test-backend:
 kind:
 	./scripts/setup-local-cluster.sh &&\
 	 ./scripts/push-images-to-local-registry.sh &&\
-	 kubectl apply -f manifests/
+	 kubectl apply -f manifests/concord.yaml
+

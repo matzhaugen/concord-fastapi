@@ -3,7 +3,7 @@ import datetime
 import numpy as np
 import pandas as pd
 import pytest
-from src.db import crud, models
+from src.db import crud
 from src.db.database import Base, SessionLocal
 from src.mock_db import get_data
 from src.schemas import UserCreate

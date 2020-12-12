@@ -10,7 +10,7 @@ from src.db import crud, models
 from src.db.database import SessionLocal, engine
 from src.service import PortfolioService
 
-app = FastAPI()
+app = FastAPI(root_path="/api/v1")
 
 # Dependency
 def get_db():

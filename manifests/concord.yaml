@@ -33,6 +33,20 @@ spec:
         app: concord
     spec:
       containers:
+        - image: postgres:12
+          name: db
+          env:
+          - name: POSTGRES_HOST_AUTH_METHOD
+            value: trust
+          ports:
+            - containerPort: 5432
+              name: db-connection
+              protocol: TCP
+          volumeMounts:
+            - name: local-repo
+              mountPath: /flatData.csv
+              subPath: concord/src/flatData.csv
+              readOnly: true
         - name: concord
           image: localhost:5000/concord-fastapi_concord:latest
           command: ['/start-reload.sh']
@@ -43,6 +57,8 @@ spec:
               value: src.main
             - name: BACKEND_URL
               value: http://localhost:81
+            - name: SQL_ALCHEMY_DB_URI
+              value: postgresql://postgres:postgrespassword@localhost:5432/postgres
             - name: PYTHONUNBUFFERED
               value: "1"
             - name: PYTHONIOENCODING
@@ -82,6 +98,6 @@ metadata:
   name: concord-ingress
   namespace: concord
 spec:
-  prefix: /
+  prefix: /api/v1
   service: concord:80
   timeout_ms: 40000

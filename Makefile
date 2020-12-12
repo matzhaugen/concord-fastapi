@@ -28,5 +28,6 @@ test-backend:
 kind:
 	./scripts/setup-local-cluster.sh &&\
 	 ./scripts/push-images-to-local-registry.sh &&\
+	 ./setup-openfaas.sh &&\
 	 kubectl apply -f manifests/concord.yaml
 

@@ -6,6 +6,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from src import schemas
+from src.config import config
 from src.db import crud, models
 from src.db.database import SessionLocal, engine
 from src.service import PortfolioService
@@ -37,6 +38,14 @@ class PortfolioRequest(BaseModel):
         allow_population_by_field_name = True
 
 
+@app.get("/hello-of")
+def hello_of():
+    import requests
+
+    res = requests.get(f"{config.openfaas_url}/of-concord")
+    return res.json
+
+
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
@@ -60,9 +69,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
-):
+def create_item_for_user(user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
     return crud.create_user_item(db=db, item=item)
 
 
@@ -84,12 +91,8 @@ def tickers():
 
 
 @app.post("/portfolio", response_model=CreatePortfolioResponse)
-def portfolio(
-    request: PortfolioRequest, portfolio_service: PortfolioService = Depends()
-):
+def portfolio(request: PortfolioRequest, portfolio_service: PortfolioService = Depends()):
 
-    result = portfolio_service.get_portfolio(
-        request.tickers, request.end_date.strftime("%Y-%m-%d")
-    )
+    result = portfolio_service.get_portfolio(request.tickers, request.end_date.strftime("%Y-%m-%d"))
 
     return result

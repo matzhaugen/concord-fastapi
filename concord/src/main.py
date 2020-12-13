@@ -82,14 +82,26 @@ def tickers():
     return {"tickers": prices.columns.tolist()}
 
 
-@app.post("/fast-portfolio", response_model=CreatePortfolioResponse)
-def portfolio_fast(
+@app.post("/portfolio-sync", response_model=CreatePortfolioResponse)
+def portfolio_sync(
     request: schemas.PortfolioRequest,
     portfolio_service: PortfolioService = Depends(),
     db: Session = Depends(get_db),
 ):
 
-    result = portfolio_service.get_portfolio_fast(db, request.tickers, request.end_date)
+    result = portfolio_service.get_portfolio_sync(db, request.tickers, request.end_date)
+
+    return result
+
+
+@app.post("/portfolio-async", response_model=CreatePortfolioResponse)
+async def portfolio_async(
+    request: schemas.PortfolioRequest,
+    portfolio_service: PortfolioService = Depends(),
+    db: Session = Depends(get_db),
+):
+
+    result = await portfolio_service.get_portfolio_async(db, request.tickers, request.end_date)
 
     return result
 
@@ -97,6 +109,6 @@ def portfolio_fast(
 @app.post("/portfolio", response_model=CreatePortfolioResponse)
 def portfolio(request: schemas.PortfolioRequest, portfolio_service: PortfolioService = Depends()):
 
-    result = portfolio_service.get_portfolio(request.tickers, request.end_date.strftime("%Y-%m-%d"))
+    result = portfolio_service.get_portfolio_backend(request.tickers, request.end_date.strftime("%Y-%m-%d"))
 
     return result

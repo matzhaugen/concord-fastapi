@@ -1,12 +1,13 @@
 import asyncio  # noqa
 import io
 from datetime import date, timedelta
-from typing import List
+from typing import Dict, List
 
 import aiohttp  # noqa
 import numpy as np
 import pandas as pd
 import requests
+import ujson
 from sqlalchemy.orm import Session
 from src import performance_metrics
 from src.config import config
@@ -30,7 +31,7 @@ def split_by_rebalance_periods(df: pd.DataFrame, rebalance_dates: np.ndarray, es
     return chunks
 
 
-def get_returns(prices):
+def get_returns(prices: pd.DataFrame) -> pd.DataFrame:
     r = np.diff(prices, axis=0) / prices[:-1]
     r.index = prices.index[1:]
     return r
@@ -44,8 +45,8 @@ def get_rebalance_dates(start_date: np.datetime64, end_date: np.datetime64, reba
 
 
 async def call_of_concord(aio_session, url: str, data: bytes):
-    async with aio_session.post(url, json=data) as resp:
-        return await resp.json()
+    async with aio_session.post(url, data=data) as resp:
+        return await resp.json(content_type="application/json")
 
 
 def to_bytestring(array: np.ndarray):
@@ -60,20 +61,46 @@ class PortfolioService:
         self.backend_url = config.backend_url
         self.openfaas_url = config.openfaas_url
 
-    def get_portfolio_fast(self, db: Session, tickers: List[str], end_date: date):
+    async def get_portfolio_async(self, db: Session, tickers: List[str], end_date: date):
         url = f"{config.openfaas_url}/function/of-concord"
 
         prices = crud.retrieve_stocks(db, tickers=tickers, end_date=end_date)
         start_date = np.datetime64(prices.index[0], "D") + np.timedelta64(365, "D")
         observed_end_date = np.datetime64(prices.index[-1], "D")
         assert start_date < observed_end_date, "Not enough data to estimate portfolio"
-        rebalance_dates = get_rebalance_dates(
-            start_date=start_date, end_date=observed_end_date, rebalance_interval=REBALANCE_INTERVAL
-        )
+        rebalance_dates = get_rebalance_dates(start_date, observed_end_date, REBALANCE_INTERVAL)
         chunks = split_by_rebalance_periods(prices, rebalance_dates, ESTIMATION_HORIZON)
-        # async with aiohttp.ClientSession() as aio_session:
-        #     aws = [call_of_concord(aio_session, url, to_bytestring(df.values)) for df in range(chunks)]
-        #     weights = await asyncio.gather(*aws)  # where the magic happens
+        async with aiohttp.ClientSession() as aio_session:
+            aws = [call_of_concord(aio_session, url, to_bytestring(df.values)) for df in chunks]
+            weights = await asyncio.gather(*aws)  # where the magic happens
+        weights = [w["weights"] for w in weights]
+        returns = get_returns(prices)
+        times = returns.index.values.astype("datetime64[D]")
+        wealth_times, wealth_values = performance_metrics.get_wealth(
+            np.array(weights), returns.values, times, rebalance_dates
+        )
+
+        wealth_srs = pd.Series(data=np.around(wealth_values, 3), name="value", index=wealth_times)
+
+        weights_df = pd.DataFrame(data=weights, columns=tickers, index=rebalance_dates)
+        weights_df.index = weights_df.index.strftime(date_format="%Y-%m-%d")
+
+        response = {
+            "wealth": ujson.loads(wealth_srs.to_json(orient="index")),
+            "weights": ujson.loads(weights_df.to_json(orient="index")),
+        }
+
+        return response
+
+    def get_portfolio_sync(self, db: Session, tickers: List[str], end_date: date) -> Dict[str, List]:
+        url = f"{config.openfaas_url}/function/of-concord"
+
+        prices = crud.retrieve_stocks(db, tickers=tickers, end_date=end_date)
+        start_date = np.datetime64(prices.index[0], "D") + np.timedelta64(365, "D")
+        observed_end_date = np.datetime64(prices.index[-1], "D")
+        assert start_date < observed_end_date, "Not enough data to estimate portfolio"
+        rebalance_dates = get_rebalance_dates(start_date, observed_end_date, REBALANCE_INTERVAL)
+        chunks = split_by_rebalance_periods(prices, rebalance_dates, ESTIMATION_HORIZON)
 
         weights = []
         for chunk in chunks:
@@ -81,18 +108,27 @@ class PortfolioService:
                 url,
                 data=to_bytestring(chunk.values),
             )
-            weights.append(response.json()["weights"])
-
+            weights.append(response.json())
+        weights = [w["weights"] for w in weights]
         returns = get_returns(prices)
         times = returns.index.values.astype("datetime64[D]")
-        wealth_times, wealth_values = performance_metrics.get_wealth(np.array(weights), returns, times, rebalance_dates)
+        wealth_times, wealth_values = performance_metrics.get_wealth(
+            np.array(weights), returns.values, times, rebalance_dates
+        )
 
-        from pdb import set_trace
+        wealth_srs = pd.Series(data=np.around(wealth_values, 3), name="value", index=wealth_times)
 
-        set_trace()
-        return response.json()
+        weights_df = pd.DataFrame(data=weights, columns=tickers, index=rebalance_dates)
+        weights_df.index = weights_df.index.strftime(date_format="%Y-%m-%d")
 
-    def get_portfolio(self, tickers: List[str], end_date):
+        final_response = {
+            "wealth": ujson.loads(wealth_srs.to_json(orient="index")),
+            "weights": ujson.loads(weights_df.to_json(orient="index")),
+        }
+
+        return final_response
+
+    def get_portfolio_backend(self, tickers: List[str], end_date):
         print(self.backend_url)
         response = requests.post(
             f"{self.backend_url}/portfolio",

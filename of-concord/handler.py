@@ -47,6 +47,7 @@ def handle(event, context):
         status_code = HTTPStatus.INTERNAL_SERVER_ERROR
         p = prices.shape[0]
         weights = [[1.0 / p] * p]  # equal weights
+    #  The body need to be a dict so that it can be json decoded.
     return {
         "statusCode": status_code,
         "body": {"weights": weights.tolist()},

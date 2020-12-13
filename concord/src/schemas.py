@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -18,6 +18,11 @@ class PortfolioRequest(BaseModel):
         schema_extra = {"example": {"tickers": ["AA", "AXP"], "endDate": "1993-01-01"}}
         alias_generator = to_camel
         allow_population_by_field_name = True
+
+
+class CreatePortfolioResponse(BaseModel):
+    weights: Dict[str, Dict[str, float]]
+    wealth: Dict[str, float]
 
 
 class StockDate(BaseModel):

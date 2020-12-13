@@ -7,7 +7,7 @@ ERROR_TOL = 0.01
 
 
 def test_fast_portfolio():
-    response = client.post("/fast-portfolio", json={"tickers": ["AA", "AXP"], "endDate": "1991-01-01"})
+    response = client.post("/fast-portfolio", json={"tickers": ["AA", "AXP"], "endDate": "1992-01-01"})
     body = response.json()
     assert (pd.Series(body["wealth"]) >= 0).all()
     assert (pd.DataFrame(body["weights"]).T.sum(axis=1) - 1 < ERROR_TOL).all()

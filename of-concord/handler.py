@@ -1,5 +1,6 @@
 import io
 import time
+from http import HTTPStatus
 
 import numpy as np
 
@@ -15,7 +16,7 @@ def get_weights_from_lambda(returns, optimal_lambda):
     vector = np.ones((omega_hat.shape[0], 1))
     coef = 1 / np.dot(np.dot(vector.T, omega_hat), vector)
     w_eff = float(coef) * np.dot(omega_hat, vector)
-    return omega_hat, w_eff
+    return omega_hat, np.array(w_eff).ravel()
 
 
 def robust_concord_weights(returns, coef_mu=1):
@@ -31,22 +32,22 @@ def robust_concord_weights(returns, coef_mu=1):
     optimal_lambda = robust_selection(returns)
     omega_hat, w_eff = get_weights_from_lambda(returns, optimal_lambda)
 
-    return (w_eff, optimal_lambda)
-
-
-def concord_weights(returns):
-    weights, lambda_robust = robust_concord_weights(returns)
-
-    return np.array(weights)
+    return w_eff, optimal_lambda
 
 
 def handle(event, context):
 
-    prices = np.load(io.BytesIO(event.body))
-    returns = to_returns(prices)
-    weights = concord_weights(returns)
-
+    try:
+        prices = np.load(io.BytesIO(event.body))
+        returns = to_returns(prices)
+        weights, lambda_robust = robust_concord_weights(returns)
+        status_code = HTTPStatus.OK
+    except Exception as e:
+        print(f"Something went wrong in concord: {e}")
+        status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+        p = prices.shape[0]
+        weights = [[1.0 / p] * p]  # equal weights
     return {
-        "statusCode": 200,
-        "body": {"hello": "Hello from Concord!", "result": weights.tolist()},
+        "statusCode": status_code,
+        "body": {"weights": weights.tolist()},
     }

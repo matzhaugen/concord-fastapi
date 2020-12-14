@@ -1,0 +1,50 @@
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: starlette-backend
+  namespace: concord
+  labels:
+    app: starlette-backend
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  selector:
+    app: starlette-backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: starlette-backend
+  namespace: concord
+  labels:
+    app: starlette-backend
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: starlette-backend
+  template:
+    metadata:
+      labels:
+        app: starlette-backend
+    spec:
+      containers:
+        - name: starlette-backend
+          image: localhost:5000/starlette-backend:latest
+          command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--workers", "4"]
+          ports:
+          - name: api
+            containerPort: 8000
+          volumeMounts:
+            - name: local-repo
+              mountPath: /app/
+              subPath: starlette-backend/
+              readOnly: true
+      volumes:
+        - name: local-repo
+          hostPath:
+            path: /concord-fastapi

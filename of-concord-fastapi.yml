@@ -1,0 +1,11 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://localhost:31112
+functions:
+  of-concord-fastapi:
+    lang: python3-fastapi
+    handler: ./of-concord-fastapi
+    image: localhost:5000/of-concord-fastapi:1
+    environment:
+      mode: "http"

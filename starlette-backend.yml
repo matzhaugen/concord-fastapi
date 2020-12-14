@@ -1,0 +1,10 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://localhost:31112
+functions:
+  starlette-backend:
+    handler: ./starlette-backend
+    image: localhost:5000/starlette
+    environment:
+      mode: "http"

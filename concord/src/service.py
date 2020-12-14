@@ -15,6 +15,9 @@ from src.db import crud
 
 ESTIMATION_HORIZON = 225
 REBALANCE_INTERVAL = 30
+# BACKEND_URL = f"{config.openfaas_url}/function/of-concord-fastapi"
+# BACKEND_URL = f"{config.openfaas_url}/function/starlette-backend"
+BACKEND_URL = f"{config.starlette_backend_url}/"
 
 
 def split_by_rebalance_periods(
@@ -49,8 +52,8 @@ def get_rebalance_dates(
 
 
 async def call_of_concord(aio_session, url: str, data: Dict):
-    async with aio_session.post(url, json=data) as resp:
-        return await resp.json(content_type="application/json")
+    async with aio_session.post(url, data=data) as resp:
+        return await resp.json()
 
 
 def to_bytestring(array: np.ndarray):
@@ -68,7 +71,6 @@ class PortfolioService:
     async def get_portfolio_async(
         self, db: Session, tickers: List[str], end_date: date
     ):
-        url = f"{config.openfaas_url}/function/of-concord-fastapi"
 
         # Fetch data
         prices = crud.retrieve_stocks(db, tickers=tickers, end_date=end_date)
@@ -83,7 +85,7 @@ class PortfolioService:
         # call openfaas to calculate weights
         async with aiohttp.ClientSession() as aio_session:
             aws = [
-                call_of_concord(aio_session, url, {"data": df.values.tolist()})
+                call_of_concord(aio_session, BACKEND_URL, to_bytestring(df.values))
                 for df in chunks
             ]
             weights = await asyncio.gather(*aws)  # where the magic happens
@@ -114,7 +116,6 @@ class PortfolioService:
     def get_portfolio_sync(
         self, db: Session, tickers: List[str], end_date: date
     ) -> Dict[str, List]:
-        url = f"{config.openfaas_url}/function/of-concord-fastapi"
 
         prices = crud.retrieve_stocks(db, tickers=tickers, end_date=end_date)
         start_date = np.datetime64(prices.index[0], "D") + np.timedelta64(365, "D")
@@ -128,8 +129,8 @@ class PortfolioService:
         weights = []
         for chunk in chunks:
             response = requests.post(
-                url,
-                json={"data": chunk.values.tolist()},
+                BACKEND_URL,
+                data=to_bytestring(chunk.values),
             )
             weights.append(response.json())
         weights = [w["weights"] for w in weights]

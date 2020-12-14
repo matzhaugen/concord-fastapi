@@ -1058,7 +1058,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: openfaas-prometheus
+  name: openfaas-prometheus-fn
+  namespace: "openfaas-fn"
   labels:
     app: openfaas
     chart: openfaas-6.2.2
@@ -1077,8 +1078,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: openfaas-prometheus-fn
-  namespace: "openfaas-fn"
+  name: openfaas-prometheus
   labels:
     app: openfaas
     chart: openfaas-6.2.2
@@ -1103,12 +1103,12 @@ metadata:
     component: faas-controller
     heritage: Helm
     release: openfaas
-  name: openfaas-profiles
-  namespace: "openfaas"
+  name: openfaas-controller
+  namespace: "openfaas-fn"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: openfaas-profiles
+  name: openfaas-controller
 subjects:
   - kind: ServiceAccount
     name: openfaas-controller
@@ -1124,12 +1124,12 @@ metadata:
     component: faas-controller
     heritage: Helm
     release: openfaas
-  name: openfaas-controller
-  namespace: "openfaas-fn"
+  name: openfaas-profiles
+  namespace: "openfaas"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: openfaas-controller
+  name: openfaas-profiles
 subjects:
   - kind: ServiceAccount
     name: openfaas-controller
@@ -1844,4 +1844,4 @@ metadata:
 data:
   basic-auth-user: "YWRtaW4="
   # kubectl -n openfaas get secret basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode
-  basic-auth-password: "R2U4Nk5rQ3dyV1ZY"
+  basic-auth-password: "aURYTG4zdm84a216"

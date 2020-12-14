@@ -48,7 +48,7 @@ spec:
               subPath: concord/src/flatData.csv
               readOnly: true
         - name: concord
-          image: localhost:5000/concord-fastapi_concord:2
+          image: localhost:5000/concord-fastapi_concord:latest
           command: ['/start-reload.sh']
           env:
             - name: PORT
@@ -57,6 +57,8 @@ spec:
               value: src.main
             - name: BACKEND_URL
               value: http://localhost:81
+            - name: STARLETTE_BACKEND_URL
+              value: http://starlette-backend.concord:8000
             - name: OPENFAAS_URL
               value: http://gateway.openfaas:8080
             - name: SQL_ALCHEMY_DB_URI
@@ -74,7 +76,7 @@ spec:
               subPath: concord/src/
               readOnly: true
         - name: backend
-          image: localhost:5000/concord-fastapi_backend:2
+          image: localhost:5000/concord-fastapi_backend:latest
           command: ['/start-reload.sh']
           env:
             - name: PORT

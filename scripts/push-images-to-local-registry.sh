@@ -3,11 +3,6 @@ images=$(perl -ne 'print "$1\n" if /image: (.*)/' manifests/concord.yaml)
 images+=" "
 required_images=($images)
 
-docker tag concord-fastapi_concord localhost:5000/concord-fastapi_concord:latest &&\
-docker tag concord-fastapi_backend localhost:5000/concord-fastapi_backend:latest &&\
-docker push localhost:5000/concord-fastapi_concord:latest &&\
-docker push localhost:5000/concord-fastapi_backend:latest
-
 # Pull the required images and push them to the local registry
 for remote_image in ${required_images[@]}; do
 	has_image=$(docker images ${remote_image} -q)

@@ -3,8 +3,8 @@ TAG=1
 portfolio:
 	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio
 
-fast-portfolio:
-	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1991-01-01"}' localhost/fast-portfolio
+of-portfolio:
+	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio-sync
 
 server:
 	docker-compose down -v && docker-compose up --abort-on-container-exit
@@ -14,10 +14,12 @@ down:
 build:
 	docker-compose build
 of:
-	faas up -f of-concord.yml
+	faas up -f of-concord-fastapi.yml
 ofow:
 	echo $(kubectl -n openfaas get secret basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode)
-
+scale-of:
+	kubectl scale deployment of-concord-fastapi -n openfaas-fn --replicas=5 &&\
+	kubectl scale deployment gateway -n openfaas --replicas=5
 push-to-local-registry:
 	docker tag concord-fastapi_concord localhost:5000/concord-fastapi_concord:${TAG} &&\
 	docker tag concord-fastapi_backend localhost:5000/concord-fastapi_backend:${TAG} &&\
@@ -33,5 +35,5 @@ test-backend:
 kind:
 	./scripts/setup-local-cluster.sh &&\
 	 ./scripts/push-images-to-local-registry.sh &&\
-	 ./setup-openfaas.sh &&\
+	 ./scripts/setup-openfaas.sh &&\
 	 kubectl apply -f manifests/concord.yaml

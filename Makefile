@@ -7,7 +7,7 @@ of-portfolio:
 	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio-sync
 
 server:
-	docker-compose down -v && docker-compose up --abort-on-container-exit
+	docker-compose down -v && docker-compose up --abort-on-container-exit --remove-orphans
 
 down:
 	docker-compose down -v

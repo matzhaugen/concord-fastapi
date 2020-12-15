@@ -61,7 +61,9 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
+def create_item_for_user(
+    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+):
     return crud.create_user_item(db=db, item=item)
 
 
@@ -71,18 +73,13 @@ def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return items
 
 
-class CreatePortfolioResponse(BaseModel):
-    weights: Dict[str, Dict[str, float]]
-    wealth: Dict[str, float]
-
-
 @app.get("/tickers")
 def tickers():
     prices = db.get_data()
     return {"tickers": prices.columns.tolist()}
 
 
-@app.post("/portfolio-sync", response_model=CreatePortfolioResponse)
+@app.post("/portfolio-sync", response_model=schemas.CreatePortfolioResponse)
 def portfolio_sync(
     request: schemas.PortfolioRequest,
     portfolio_service: PortfolioService = Depends(),
@@ -94,21 +91,15 @@ def portfolio_sync(
     return result
 
 
-@app.post("/portfolio-async", response_model=CreatePortfolioResponse)
+@app.post("/portfolio-async", response_model=schemas.CreatePortfolioResponse)
 async def portfolio_async(
     request: schemas.PortfolioRequest,
     portfolio_service: PortfolioService = Depends(),
     db: Session = Depends(get_db),
 ):
 
-    result = await portfolio_service.get_portfolio_async(db, request.tickers, request.end_date)
-
-    return result
-
-
-@app.post("/portfolio", response_model=CreatePortfolioResponse)
-def portfolio(request: schemas.PortfolioRequest, portfolio_service: PortfolioService = Depends()):
-
-    result = portfolio_service.get_portfolio_backend(request.tickers, request.end_date.strftime("%Y-%m-%d"))
+    result = await portfolio_service.get_portfolio_async(
+        db, request.tickers, request.end_date
+    )
 
     return result

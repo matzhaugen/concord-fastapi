@@ -153,12 +153,3 @@ class PortfolioService:
         }
 
         return final_response
-
-    def get_portfolio_backend(self, tickers: List[str], end_date):
-        print(self.backend_url)
-        response = requests.post(
-            f"{self.backend_url}/portfolio",
-            json={"tickers": tickers, "end_date": end_date},
-        )
-
-        return response.json()

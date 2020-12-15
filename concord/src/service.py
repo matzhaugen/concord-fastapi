@@ -65,7 +65,6 @@ def to_bytestring(array: np.ndarray):
 
 class PortfolioService:
     def __init__(self):
-        self.backend_url = config.backend_url
         self.openfaas_url = config.openfaas_url
 
     async def get_portfolio_async(

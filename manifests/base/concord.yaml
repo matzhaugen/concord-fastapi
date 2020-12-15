@@ -48,7 +48,7 @@ spec:
               subPath: concord/src/flatData.csv
               readOnly: true
         - name: concord
-          image: localhost:5000/concord-fastapi_concord:latest
+          image: localhost:5000/concord:latest
           command: ['/start-reload.sh']
           env:
             - name: PORT
@@ -76,7 +76,7 @@ spec:
               subPath: concord/src/
               readOnly: true
         - name: backend
-          image: localhost:5000/concord-fastapi_backend:latest
+          image: localhost:5000/starlette-backend:latest
           command: ['/start-reload.sh']
           env:
             - name: PORT

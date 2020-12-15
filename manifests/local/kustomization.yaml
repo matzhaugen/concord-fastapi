@@ -1,0 +1,8 @@
+bases:
+- ../base
+
+images:
+- name: matzhaugen/concord
+  newName: localhost:5000/concord
+- name: matzhaugen/starlette-backend
+  newName: localhost:5000/starlette-backend

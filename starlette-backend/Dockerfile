@@ -4,7 +4,7 @@ FROM python:3.8-slim
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
 
-RUN pip install --no-cache-dir uvicorn gunicorn starlette numpy pyconcord uvloop
+RUN pip install --no-cache-dir uvicorn gunicorn starlette numpy pyconcord uvloop httptools
 
 COPY . /app
 RUN addgroup --system app && adduser app --system --ingroup app

@@ -1,5 +1,5 @@
 # Read manifests and extract all images
-images=$(perl -ne 'print "$1\n" if /image: (.*)/' manifests/concord.yaml)
+images=$(perl -ne 'print "$1\n" if /image: (.*)/' manifests/local/local.yaml)
 images+=" "
 required_images=($images)
 

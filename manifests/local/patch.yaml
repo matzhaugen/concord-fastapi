@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: starlette-backend
+  name: starlette-backend
+  namespace: concord
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: starlette-backend
+  template:
+    metadata:
+      labels:
+        app: starlette-backend
+    spec:
+      containers:
+        - name: starlette-backend
+          volumeMounts:
+            - mountPath: /app/
+              name: local-repo
+              readOnly: true
+              subPath: starlette-backend/
+      volumes:
+        - hostPath:
+            path: /concord-fastapi
+          name: local-repo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concord
+  namespace: concord
+  labels:
+    app: concord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: concord
+  template:
+    metadata:
+      labels:
+        app: concord
+    spec:
+      containers:
+        - name: db
+          volumeMounts:
+            - name: local-repo
+              mountPath: /flatData.csv
+              subPath: concord/src/flatData.csv
+              readOnly: true
+        - name: concord
+          volumeMounts:
+            - name: local-repo
+              mountPath: /app/src/
+              subPath: concord/src/
+              readOnly: true
+        - name: starlette-backend
+          volumeMounts:
+            - name: local-repo
+              mountPath: /app/
+              subPath: starlette-backend/
+              readOnly: true
+      volumes:
+        - name: local-repo
+          hostPath:
+            path: /concord-fastapi

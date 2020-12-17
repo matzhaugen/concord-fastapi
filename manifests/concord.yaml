@@ -36,14 +36,19 @@ spec:
         - image: postgres:12
           name: db
           env:
-            - name: POSTGRES_HOST_AUTH_METHOD
-              value: trust
+          - name: POSTGRES_HOST_AUTH_METHOD
+            value: trust
           ports:
             - containerPort: 5432
               name: db-connection
               protocol: TCP
+          volumeMounts:
+            - name: local-repo
+              mountPath: /flatData.csv
+              subPath: concord/src/flatData.csv
+              readOnly: true
         - name: concord
-          image: DOCKER_REGISTRY/concord:latest
+          image: localhost:5000/concord-fastapi_concord:latest
           command: ['/start-reload.sh']
           env:
             - name: PORT
@@ -63,8 +68,8 @@ spec:
             - name: PYTHONIOENCODING
               value: "UTF-8"
           ports:
-            - name: api
-              containerPort: 80
+          - name: api
+            containerPort: 80
           volumeMounts:
             - name: local-repo
               mountPath: /app/src/
@@ -72,10 +77,20 @@ spec:
               readOnly: true
         - name: starlette-backend
           image: DOCKER_REGISTRY/starlette-backend:latest
-          command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--workers", "4"]
+          command: ['/start-reload.sh']
+          env:
+            - name: PORT
+              value: "81"
+            - name: MODULE_NAME
+              value: src.main
           ports:
-            - name: api
-              containerPort: 8000
+          - name: api
+            containerPort: 81
+          volumeMounts:
+            - name: local-repo
+              mountPath: /app/src/
+              subPath: backend/src/
+              readOnly: true
       volumes:
         - name: local-repo
           hostPath:

@@ -35,5 +35,4 @@ test-backend:
 kind:
 	./scripts/setup-local-cluster.sh &&\
 	 ./scripts/push-images-to-local-registry.sh &&\
-	 ./scripts/setup-openfaas.sh &&\
-	 kubectl apply -f manifests/concord.yaml
+	 ENV=local ./scripts/deploy-concord.sh

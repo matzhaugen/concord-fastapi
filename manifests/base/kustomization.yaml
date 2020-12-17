@@ -1,4 +1,3 @@
 resources:
 - concord.yaml
-- openfaas.yaml
 - starlette-backend.yaml

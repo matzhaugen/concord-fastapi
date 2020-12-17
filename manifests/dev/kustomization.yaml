@@ -1,11 +1,14 @@
 bases:
 - ../base
 
+resources:
+- local-repo.yaml
+
 images:
 - name: DOCKER_REGISTRY/concord
-  newName: localhost:5000/concord
+  newName: matzhaugen/concord
 - name: DOCKER_REGISTRY/starlette-backend
-  newName: localhost:5000/starlette-backend
+  newName: matzhaugen/starlette-backend
 
 patchesStrategicMerge:
 - patch.yaml

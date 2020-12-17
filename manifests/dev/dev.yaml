@@ -81,7 +81,7 @@ spec:
           value: "1"
         - name: PYTHONIOENCODING
           value: UTF-8
-        image: localhost:5000/concord:latest
+        image: matzhaugen/concord:latest
         name: concord
         ports:
         - containerPort: 80
@@ -92,16 +92,16 @@ spec:
           readOnly: true
           subPath: concord/src/
       - command:
-        - uvicorn
-        - main:app
-        - --host
-        - 0.0.0.0
-        - --workers
-        - "4"
-        image: localhost:5000/starlette-backend:latest
-        name: starlette-backend
+        - /start-reload.sh
+        env:
+        - name: PORT
+          value: "81"
+        - name: MODULE_NAME
+          value: src.main
+        image: matzhaugen/starlette-backend:latest
+        name: backend
         ports:
-        - containerPort: 8000
+        - containerPort: 81
           name: api
         volumeMounts:
         - mountPath: /app/
@@ -143,15 +143,15 @@ spec:
         ports:
         - containerPort: 8000
           name: api
+        readOnly: true
+        subPath: starlette-backend/
         volumeMounts:
         - mountPath: /app/
           name: local-repo
-          readOnly: true
-          subPath: starlette-backend/
       volumes:
-      - hostPath:
-          path: /concord-fastapi
+      - hostPath: null
         name: local-repo
+        path: /concord-fastapi
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -162,3 +162,26 @@ spec:
   prefix: /
   service: concord:80
   timeout_ms: 40000
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-repo
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  local:
+    path: /Users/matzhaugen/projects/concord-fastapi/concord-fastapi
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - pool-wi7gvdp4c-3vi34
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  volumeMode: Filesystem

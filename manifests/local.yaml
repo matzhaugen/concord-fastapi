@@ -91,23 +91,24 @@ spec:
           name: local-repo
           readOnly: true
           subPath: concord/src/
-      - command:
-        - uvicorn
-        - main:app
-        - --host
-        - 0.0.0.0
-        - --workers
-        - "4"
-        image: localhost:5000/starlette-backend:latest
-        name: starlette-backend
-        ports:
-        - containerPort: 8000
-          name: api
+      - name: backend
         volumeMounts:
         - mountPath: /app/
           name: local-repo
           readOnly: true
           subPath: starlette-backend/
+      - command:
+        - /start-reload.sh
+        env:
+        - name: PORT
+          value: "81"
+        - name: MODULE_NAME
+          value: src.main
+        image: localhost:5000/starlette-backend:latest
+        name: starlette-backend
+        ports:
+        - containerPort: 8000
+          name: api
       volumes:
       - hostPath:
           path: /concord-fastapi

@@ -34,17 +34,8 @@ spec:
     spec:
       containers:
         - name: starlette-backend
-          image: localhost:5000/starlette-backend:latest
+          image: matzhaugen/starlette-backend:latest
           command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--workers", "4"]
           ports:
-          - name: api
-            containerPort: 8000
-          volumeMounts:
-            - name: local-repo
-              mountPath: /app/
-              subPath: starlette-backend/
-              readOnly: true
-      volumes:
-        - name: local-repo
-          hostPath:
-            path: /concord-fastapi
+            - name: api
+              containerPort: 8000

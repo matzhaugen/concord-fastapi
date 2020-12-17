@@ -5,6 +5,7 @@ provider:
 functions:
   starlette-backend:
     handler: ./starlette-backend
-    image: localhost:5000/starlette
+    image: matzhaugen/starlette-backend
     environment:
       mode: "http"
+      exec_timeout: "20s"

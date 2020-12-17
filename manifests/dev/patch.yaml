@@ -6,7 +6,7 @@ metadata:
   name: starlette-backend
   namespace: concord
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: starlette-backend
@@ -20,12 +20,12 @@ spec:
           volumeMounts:
             - mountPath: /app/
               name: local-repo
-          readOnly: true
-          subPath: starlette-backend/
+              readOnly: true
+              subPath: starlette-backend/
       volumes:
-        - hostPath:
-          path: /concord-fastapi
-          name: local-repo
+        - name: local-repo
+          persistentVolumeClaim:
+            claimName: local-repo-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -57,13 +57,13 @@ spec:
               mountPath: /app/src/
               subPath: concord/src/
               readOnly: true
-        - name: backend
+        - name: starlette-backend
           volumeMounts:
             - name: local-repo
-              mountPath: /app/
+              mountPath: /app
               subPath: starlette-backend/
               readOnly: true
       volumes:
         - name: local-repo
-          hostPath:
-            path: /concord-fastapi
+          persistentVolumeClaim:
+            claimName: local-repo-pvc

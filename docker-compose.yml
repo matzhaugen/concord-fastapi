@@ -27,11 +27,9 @@ services:
     ports:
       - "80:80"
   postgres:
-    volumes:
-      - ./concord/src/flatData.csv:/flatData.csv
     networks: 
       - new
-    image: postgres:12
+    image: localhost:5000/concord-db
     restart: always
     environment:
       POSTGRES_PASSWORD: postgrespassword

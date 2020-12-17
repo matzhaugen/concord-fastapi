@@ -1,10 +1,8 @@
 TAG=1
 .PHONY: build
-portfolio:
-	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio
 
-of-portfolio:
-	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio-sync
+portfolio:
+	curl -X POST -d '{"tickers": ["AA","AXP"], "endDate": "1993-01-01"}' localhost/portfolio-async
 
 server:
 	docker-compose down -v && docker-compose up --abort-on-container-exit --remove-orphans
@@ -18,13 +16,11 @@ of:
 ofow:
 	echo $(kubectl -n openfaas get secret basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode)
 scale-of:
-	kubectl scale deployment of-concord-fastapi -n openfaas-fn --replicas=5 &&\
+	kubectl scale deployment starlette-backend -n openfaas-fn --replicas=5 &&\
 	kubectl scale deployment gateway -n openfaas --replicas=5
+
 push-to-local-registry:
-	docker tag concord-fastapi_concord localhost:5000/concord-fastapi_concord:${TAG} &&\
-	docker tag concord-fastapi_backend localhost:5000/concord-fastapi_backend:${TAG} &&\
-	docker push localhost:5000/concord-fastapi_concord:${TAG} &&\
-	docker push localhost:5000/concord-fastapi_backend:${TAG}
+	DOCKER_REGISTRY=localhost:5000 ./scripts/buildpush-dockerimages.sh
 
 test-concord:
 	cd concord && poetry run python -m pytest --pdb && cd ..
@@ -32,6 +28,14 @@ test-concord:
 test-backend:
 	cd backend && poetry run python -m pytest --pdb && cd ..
 
+do:
+	kubectl create secret generic regcred \
+    --from-file=.dockerconfigjson=${HOME}/.docker/config.json \
+    --type=kubernetes.io/dockerconfigjson
+	kubectl config use-context do-lon1-k8s-1-19-3-do-2-lon1-concord
+	ENV=dev ./scripts/deploy-concord.sh
+dev:
+	ENV=dev; kubectl kustomize manifests/${ENV} > manifests/${ENV}/${ENV}.yaml && kubectl apply -f manifests/${ENV}/${ENV}.yaml
 kind:
 	./scripts/setup-local-cluster.sh &&\
 	 ./scripts/push-images-to-local-registry.sh &&\

@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: local-repo
+  name: local-repo-pv
 spec:
   capacity:
-    storage: 1Gi
+    storage: 200Mi
   volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   local:
-    path: /Users/matzhaugen/projects/concord-fastapi/concord-fastapi
+    path: /Users/matzhaugen/projects/concord-fastapi
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -20,3 +20,18 @@ spec:
           operator: In
           values:
           - pool-wi7gvdp4c-3vi34
+          - pool-wi7gvdp4c-3vi3i
+          - pool-wi7gvdp4c-3vi3v
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-repo-pvc
+  namespace: concord
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Mi

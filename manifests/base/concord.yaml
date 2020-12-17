@@ -33,7 +33,7 @@ spec:
         app: concord
     spec:
       containers:
-        - image: postgres:12
+        - image: DOCKER_REGISTRY/concord-db:latest
           name: db
           env:
             - name: POSTGRES_HOST_AUTH_METHOD
@@ -44,6 +44,7 @@ spec:
               protocol: TCP
         - name: concord
           image: DOCKER_REGISTRY/concord:latest
+          imagePullPolicy: Always
           command: ['/start-reload.sh']
           env:
             - name: PORT
@@ -65,21 +66,12 @@ spec:
           ports:
             - name: api
               containerPort: 80
-          volumeMounts:
-            - name: local-repo
-              mountPath: /app/src/
-              subPath: concord/src/
-              readOnly: true
         - name: starlette-backend
           image: DOCKER_REGISTRY/starlette-backend:latest
           command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--workers", "4"]
           ports:
             - name: api
               containerPort: 8000
-      volumes:
-        - name: local-repo
-          hostPath:
-            path: /concord-fastapi
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping

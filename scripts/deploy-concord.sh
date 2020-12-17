@@ -1,3 +1,4 @@
+
 # This script will deploy the concord app to any cluster the kubeconfig is pointing at
 kubectl create namespace concord
 
@@ -9,4 +10,4 @@ kubectl wait --timeout=180s -n ambassador --for=condition=deployed ambassadorins
 
 # Depoy manifests, ENV=[local, dev], which environment to deploy to
 kubectl kustomize manifests/${ENV} > manifests/${ENV}.yaml
-kubectl apply -f manifests/${ENV}.yaml
+kubectl apply -f manifests/${ENV}/${ENV}.yaml

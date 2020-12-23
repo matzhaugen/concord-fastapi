@@ -1,0 +1,2 @@
+FROM postgres:12
+RUN apt-get update && apt-get install -y curl && curl -Lo /flatData.csv  https://www.dropbox.com/s/n4ajw4fpjt6n3e8/flatData.csv?dl=0 && apt-get remove -y curl

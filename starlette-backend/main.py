@@ -1,4 +1,5 @@
 import io
+import time
 from http import HTTPStatus
 
 import numpy as np
@@ -18,11 +19,12 @@ def to_returns(prices):
 
 
 def get_weights_from_lambda(returns, optimal_lambda):
-    omega_hat = concord(returns, optimal_lambda).todense()
-    vector = np.ones((omega_hat.shape[0], 1))
-    coef = 1 / np.dot(np.dot(vector.T, omega_hat), vector)
-    w_eff = float(coef) * np.dot(omega_hat, vector)
-    return omega_hat, np.array(w_eff).ravel()
+    omega_hat = concord(returns, optimal_lambda)
+    ones = np.ones((omega_hat.shape[0], 1))
+    vec = omega_hat.dot(ones)
+    coef = 1 / np.dot(ones.T, vec)
+    w_eff = float(coef) * vec
+    return omega_hat, w_eff.ravel()
 
 
 def robust_concord_weights(returns, coef_mu=1):
@@ -35,8 +37,14 @@ def robust_concord_weights(returns, coef_mu=1):
     """
     # compute returns
 
-    optimal_lambda = robust_selection(returns)
+    start = time.time()
+    optimal_lambda = robust_selection(returns, B=100)
+    end = time.time() - start
+    print(f"{end}")
+    start = time.time()
     omega_hat, w_eff = get_weights_from_lambda(returns, optimal_lambda)
+    end = time.time() - start
+    print(f"{end}")
 
     return w_eff, optimal_lambda
 

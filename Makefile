@@ -20,7 +20,7 @@ scale-of:
 	kubectl scale deployment gateway -n openfaas --replicas=5
 
 push-to-local-registry:
-	DOCKER_REGISTRY=localhost:5000 ./scripts/buildpush-dockerimages.sh
+	DOCKER_REGISTRY=localhost:5002 ./scripts/buildpush-dockerimages.sh
 
 test-concord:
 	cd concord && poetry run python -m pytest --pdb && cd ..

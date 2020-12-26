@@ -37,14 +37,8 @@ def robust_concord_weights(returns, coef_mu=1):
     """
     # compute returns
 
-    start = time.time()
-    optimal_lambda = robust_selection(returns, B=100)
-    end = time.time() - start
-    print(f"{end}")
-    start = time.time()
+    optimal_lambda = robust_selection(returns, B=100)  # 10x slower than next line
     omega_hat, w_eff = get_weights_from_lambda(returns, optimal_lambda)
-    end = time.time() - start
-    print(f"{end}")
 
     return w_eff, optimal_lambda
 

@@ -7,6 +7,7 @@ import aiohttp
 import requests
 import src.mock_db as db
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from src import schemas
@@ -17,6 +18,18 @@ from src.service import PortfolioService, call_of_concord
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:5000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -24,6 +37,12 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@app.get("/timeseries-schemas", response_model=schemas.TimeSeriesSchema)
+def ts_schema():
+    output = [{"name": "Time", "type": "date", "format": "%Y-%m-%d"}, {"name": "Wealth Growth", "type": "number"}]
+    return output
 
 
 @app.get("/async-hello")
@@ -61,9 +80,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
-):
+def create_item_for_user(user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
     return crud.create_user_item(db=db, item=item)
 
 
@@ -98,8 +115,6 @@ async def portfolio_async(
     db: Session = Depends(get_db),
 ):
 
-    result = await portfolio_service.get_portfolio_async(
-        db, request.tickers, request.end_date
-    )
+    result = await portfolio_service.get_portfolio_async(db, request.tickers, request.end_date)
 
     return result

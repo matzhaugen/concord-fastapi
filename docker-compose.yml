@@ -8,8 +8,8 @@ services:
       - "5001:8000"
     volumes:
       - ./starlette-backend:/app
-    # command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--workers", "4"]
-    command: ["gunicorn", "main:app", "--bind", "0.0.0.0:8000", "--workers", "4", "-k", "uvicorn.workers.UvicornWorker"]
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--workers", "4"]
+    # command: ["gunicorn", "main:app", "--bind", "0.0.0.0:8000", "--workers", "4", "-k", "uvicorn.workers.UvicornWorker"]
   concord:
     networks:
       - new

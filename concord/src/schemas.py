@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
@@ -8,6 +8,16 @@ def to_camel(string: str) -> str:
     result = "".join(word.capitalize() for word in string.split("_"))
     result = result[0].lower() + result[1:]
     return result
+
+
+class TsTypes(BaseModel):
+    name: str
+    type: str
+    format: Optional[str]
+
+
+class TimeSeriesSchema(BaseModel):
+    __root__: List[TsTypes]
 
 
 class PortfolioRequest(BaseModel):
@@ -21,8 +31,7 @@ class PortfolioRequest(BaseModel):
 
 
 class CreatePortfolioResponse(BaseModel):
-    weights: Dict[str, Dict[str, float]]
-    wealth: Dict[str, float]
+    __root__: List[List[Union[str, float]]]
 
 
 class StockDate(BaseModel):

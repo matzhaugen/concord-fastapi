@@ -12,10 +12,10 @@ for remote_image in ${required_images[@]}; do
 		docker pull $remote_image
 	fi
 
-	local_image=$(echo $remote_image | sed -e 's/^.*\//localhost:5000\//g')
+	local_image=$(echo $remote_image | sed -e 's/^.*\//localhost:5002\//g')
 	if [[ $local_image != *"/"* ]]; then
 	  # "${local_image}: This image has no repo in the tag so we need special treatment"
-	  local_image="localhost:5000/${local_image}"
+	  local_image="localhost:5002/${local_image}"
 
 	fi
 	echo "$Local image: ${local_image}"

@@ -29,12 +29,12 @@
 <style>
 
 	main {
-	  margin: 0;
+	  margin: 100px;
 	  padding: 5px;
 	}
 
 	h1 {
-		color: #ff3e00;
+		color: #3f51b5;
 		text-transform: uppercase;
 		font-size: 4em;
 		font-weight: 100;

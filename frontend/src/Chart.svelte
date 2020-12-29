@@ -38,7 +38,7 @@
               type: 'line'
             },
             format: {
-              prefix: '$'
+              suffix: 'x'
             },
             title: 'Wealth Growth'
           }
@@ -48,12 +48,20 @@
   };
 </script>
 
+
 {#await promise}
   <p>Fetching data and schema...</p>
 {:then value}
+  <div id="wealth-growth-chart">
   <SvelteFC
-    {...getChartConfig(value)}
-  id="wealth-growth-chart"/>
+    {...getChartConfig(value)}/>
+  </div>
 {:catch error}
   <p>Something went wrong: {error.message}</p>
 {/await}
+
+<style type="text/css">
+  #wealth-growth-chart {
+    max-width: 900px;
+  }
+</style>

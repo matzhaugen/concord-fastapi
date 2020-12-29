@@ -43,18 +43,17 @@ The first step will make sure that the latest files from the `of-concord` folder
 
 ## Testing the app
 
-WORK IN PROGRESS
-This is the gold standard, or goal
+We test the concord backend app as follows
 ```
-cd concord
-poetry run python -m pytest tests/ -s --pdb
-```
-
-This is the current state
-```
-poetry run python -m pytest tests/test_main.py -s --pdb -k test_fast_portfolio
+make server # In one window
+make test-concord # In a new window
 ```
 
+## Launching the front end
+
+```
+make frontend
+```
 
 ### Running on a local cluster
 

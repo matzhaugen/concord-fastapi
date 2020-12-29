@@ -70,8 +70,7 @@
   }
 </script>
 
-<Textfield bind:value={searchText} label="Search Ticker" />
-
+<Textfield bind:value={searchText} label="Search Ticker"/>
 <div class="available-tickers">
   Available Tickers
 <List>

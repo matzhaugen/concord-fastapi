@@ -40,3 +40,5 @@ kind:
 	./scripts/setup-local-cluster.sh &&\
 	 ./scripts/push-images-to-local-registry.sh &&\
 	 ENV=local ./scripts/deploy-concord.sh
+frontend:
+	cd frontend && npm i && npm start dev

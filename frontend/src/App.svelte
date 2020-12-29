@@ -11,7 +11,6 @@
 	let availableTickers = [];
 	let showChart = false;
 	let dataFetch;
-	$: console.log(portfolio);
 	function fetchData(portfolio) {
 		if (portfolio.length > 1) {
 			showChart = true;
@@ -67,7 +66,7 @@
 	</Button>
 
 	{#if showChart}
-		<Chart bind:portfolio	bind:dataFetch />
+		<Chart bind:dataFetch />
 	{/if}
 
 </main>

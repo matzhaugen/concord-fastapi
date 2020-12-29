@@ -17,18 +17,11 @@
 
 <div>
   Portfolio
-<List class="portfolio-list">
+<List>
   {#each portfolio as ticker}
     
-      <Chip><Text>{ticker}</Text><Icon on:click={removeTicker(ticker)} class="material-icons" trailing tabindex="0">cancel</Icon></Chip>
+      <Chip id={ticker}><Text>{ticker}</Text><Icon on:click={removeTicker(ticker)} class="material-icons" trailing tabindex="0">cancel</Icon></Chip>
     
   {/each}
 </List>
 </div>
-
-<style>
-	.portfolio-list {
-	    max-width: 600px;
-	    border: 1px solid rgba(0,0,0,.1);
-	}
-</style>

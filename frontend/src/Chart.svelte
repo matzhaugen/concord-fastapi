@@ -53,7 +53,7 @@
 {:then value}
   <SvelteFC
     {...getChartConfig(value)}
-  />
+  id="wealth-growth-chart"/>
 {:catch error}
   <p>Something went wrong: {error.message}</p>
 {/await}

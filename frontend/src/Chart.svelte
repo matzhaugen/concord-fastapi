@@ -4,22 +4,15 @@
   import SvelteFC, { fcRoot } from 'svelte-fusioncharts';
 
   fcRoot(FusionCharts, Timeseries);
-  let result = null
   
-  let possibleTickers = fetch("http://localhost/tickers").then(res => res.json())
-  export let defaultTickers = ["AA", "AXP"]
+  let promise, jsonify = res => res.json()
+
+  export let dataFetch;
   
-  let promise,
-    jsonify = res => res.json(),
-    dataFetch = fetch('http://localhost/portfolio-async', {
-      method: 'POST',
-      body: JSON.stringify({"tickers": defaultTickers, "endDate": "2000-01-01"})
-    }).then(jsonify),
-    schemaFetch = fetch(
+  let schemaFetch = fetch(
       'http://localhost/timeseries-schemas'
     ).then(jsonify);
-
-  promise = Promise.all([dataFetch, schemaFetch]);
+  $: promise = Promise.all([dataFetch, schemaFetch]);
 
   const getChartConfig = ([data, schema]) => {
     const fusionDataStore = new FusionCharts.DataStore(),

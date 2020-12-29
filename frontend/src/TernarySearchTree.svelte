@@ -61,7 +61,7 @@ export class TernarySearchTree
 		if (!n) return null;
 
 		const c = word.charAt(i);
-		if (c === n.val)
+    if (c === n.val)
 		{
 			if (i < word.length - 1) n = this._search(n.down, word, i + 1);
 		}
@@ -95,8 +95,8 @@ export class TernarySearchTree
 	prefixMatch(prefix)
 	{
 		const found = [];
-		const searchFromNode = this._search(this._root, prefix, 0);
-		if (searchFromNode)
+    const searchFromNode = this._search(this._root, prefix, 0);
+    if (searchFromNode)
 		{
 			if (searchFromNode.eow) found.push(searchFromNode.eow);
 			this._findWordsFrom(this._search(this._root, prefix, 0).down, found);

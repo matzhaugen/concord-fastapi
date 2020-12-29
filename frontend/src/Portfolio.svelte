@@ -15,8 +15,8 @@
 	}
 </script>
 
-<div>
-  Portfolio
+<div class="portfolio-list">
+  <pre> Portfolio </pre>
 <List>
   {#each portfolio as ticker}
     
@@ -25,3 +25,9 @@
   {/each}
 </List>
 </div>
+
+<style type="text/css">
+	.portfolio-list {
+		max-width: 600px;
+	}
+</style>

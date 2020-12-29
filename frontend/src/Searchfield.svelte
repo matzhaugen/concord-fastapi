@@ -72,7 +72,7 @@
 
 <Textfield bind:value={searchText} label="Search Ticker"/>
 <div class="available-tickers">
-  Available Tickers
+  <pre> Available Tickers </pre>
 <List>
   {#each availableTickers as ticker}
     <Chip><Icon on:click={addTicker(ticker)} class="material-icons" leading>add</Icon><Text>{ticker}</Text></Chip>
@@ -82,6 +82,6 @@
 
 <style>
   .available-tickers {
-    max-width: 20px;
+    max-width: 600px;
   }
 </style>

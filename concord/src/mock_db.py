@@ -16,7 +16,7 @@ def get_data(tickers=None, start_date=None, end_date=None):
         assert end_date > start_date, "End date must be greater than start date"
     start = time.time()
     data = pd.read_csv(CSV_FILE)
-    data = data.pivot(columns="ticker", index="date", values="price")
+    data = data.pivot(columns="ticker", index="date", values="close")
     if tickers:
         data = data[tickers]
     data.index = pd.to_datetime(data.index, yearfirst=True)

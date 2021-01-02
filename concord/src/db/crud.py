@@ -13,16 +13,16 @@ from . import models
 def df_to_db_input(df):
     df.index = df.index.strftime("%Y-%m-%d")
     df = df.reset_index()
-    df = df.melt(id_vars=["date"], value_name="price")
+    df = df.melt(id_vars=["date"], value_name="close")
     return df.to_dict("records")
 
 
 def _db_output_to_df(db_result):
     df = pd.DataFrame(
-        data=[(s.date, s.ticker, s.price) for s in db_result],
-        columns=["date", "ticker", "price"],
+        data=[(s.date, s.ticker, s.close) for s in db_result],
+        columns=["date", "ticker", "close"],
     )
-    df = df.pivot(columns=["ticker"], index="date", values="price")
+    df = df.pivot(columns=["ticker"], index="date", values="close")
     df.index = pd.to_datetime(df.index)
     return df
 
@@ -43,7 +43,7 @@ def insert_stocks(db: Session, stock_data: List[schemas.StockDate], overwrite=Tr
     stmt = insert(models.Stocks).values(stock_data)
     if overwrite:
         stmt = stmt.on_conflict_do_update(
-            index_elements=["ticker", "date"], set_={"price": stmt.excluded.price}
+            index_elements=["ticker", "date"], set_={"close": stmt.excluded.close}
         )
     else:
         stmt = stmt.on_conflict_do_nothing()

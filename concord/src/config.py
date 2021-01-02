@@ -8,8 +8,8 @@ class Config(BaseSettings):
     sql_alchemy_db_uri: str = (
         "postgresql+psycopg2://postgres:postgrespassword@localhost:5432/postgres"
     )
-    openfaas_url: str = "http://localhost:5001"
-    starlette_backend_url: str = "http://localhost:5001"
+    openfaas_url: str = "http://localhost:5002"
+    starlette_backend_url: str = "http://localhost:5002"
 
 
 config = Config()

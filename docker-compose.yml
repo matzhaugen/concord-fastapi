@@ -1,19 +1,18 @@
-version: '3.8'
+version: '3.9'
 services:
   starlette-backend:
     networks:
       - new
-    build: starlette-backend
+    image: localhost:5001/starlette-backend
     ports:
-      - "5001:8000"
+      - "5002:8000"
     volumes:
       - ./starlette-backend:/app
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--workers", "4"]
-    # command: ["gunicorn", "main:app", "--bind", "0.0.0.0:8000", "--workers", "4", "-k", "uvicorn.workers.UvicornWorker"]
+    command: ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--workers", "4"]
   concord:
     networks:
       - new
-    build: concord
+    image: localhost:5001/concord
     volumes:
       - ./concord/src:/app/src/
       - ./concord/scripts/prestart.sh:/app/prestart.sh
@@ -29,7 +28,7 @@ services:
   postgres:
     networks: 
       - new
-    image: localhost:5000/concord-db
+    image: localhost:5001/concord-db
     restart: always
     environment:
       POSTGRES_PASSWORD: postgrespassword

@@ -42,3 +42,5 @@ kind:
 	 ENV=local ./scripts/deploy-concord.sh
 frontend:
 	cd frontend && npm i && npm start dev
+registry:
+	docker service create --name registry --publish published=5001,target=5000 registry:2

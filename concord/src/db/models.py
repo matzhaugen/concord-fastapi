@@ -31,4 +31,4 @@ class Stocks(Base):
 
     ticker = Column(String, primary_key=True, index=True)
     date = Column(Date, primary_key=True)
-    price = Column(Float)
+    close = Column(Float)

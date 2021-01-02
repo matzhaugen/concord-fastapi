@@ -22,7 +22,7 @@ class TimeSeriesSchema(BaseModel):
 
 class PortfolioRequest(BaseModel):
     tickers: List[str]
-    end_date: date
+    end_date: Optional[date]
 
     class Config:
         schema_extra = {"example": {"tickers": ["AA", "AXP"], "endDate": "1993-01-01"}}
@@ -37,7 +37,7 @@ class CreatePortfolioResponse(BaseModel):
 class StockDate(BaseModel):
     ticker: str
     date: date
-    price: float
+    close: float
 
 
 class ItemBase(BaseModel):

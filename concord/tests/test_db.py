@@ -65,7 +65,7 @@ def test_insert_stocks(db, mock_data, overwrite):
     subset_df = mock_data[tickers]
     subset_df.index = subset_df.index.strftime("%Y-%m-%d")
     subset_df = subset_df.reset_index()
-    stock_data = subset_df.melt(id_vars=["date"], value_name="price").to_dict("records")
+    stock_data = subset_df.melt(id_vars=["date"], value_name="close").to_dict("records")
     crud.insert_stocks(db, stock_data, overwrite=overwrite)
     stock = crud.retrieve_stocks(db, tickers=tickers, end_date=END_DATE)
     np.testing.assert_array_equal(subset_df.set_index("date"), stock)

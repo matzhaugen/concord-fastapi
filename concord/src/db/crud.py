@@ -38,6 +38,23 @@ def insert_stocks_bulk(
     db.commit()
 
 
+def get_unique_tickers(db: Session) -> List[str]:
+    result = db.query(models.StockMeta).with_entities(models.StockMeta.ticker).all()
+    tickers = [r[0] for r in result]
+    return tickers
+
+
+def get_ticker_info(db: Session) -> List[str]:
+
+    result = (
+        db.query(models.StockMeta)
+        .with_entities(models.StockMeta.ticker, models.StockMeta.name)
+        .all()
+    )
+    ticker_info = [schemas.TickerName.from_orm(t) for t in result]
+    return ticker_info
+
+
 def insert_stocks(db: Session, stock_data: List[schemas.StockDate], overwrite=True):
     start_time = time.time()
     stmt = insert(models.Stocks).values(stock_data)

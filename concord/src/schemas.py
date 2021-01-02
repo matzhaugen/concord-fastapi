@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Dict, List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 def to_camel(string: str) -> str:
@@ -32,6 +32,18 @@ class PortfolioRequest(BaseModel):
 
 class CreatePortfolioResponse(BaseModel):
     __root__: List[List[Union[str, float]]]
+
+
+class TickerName(BaseModel):
+    ticker: str
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
+class TickerInfo(BaseModel):
+    __root__: List[TickerName]
 
 
 class StockDate(BaseModel):

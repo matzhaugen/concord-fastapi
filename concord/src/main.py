@@ -41,7 +41,10 @@ def get_db():
 
 @app.get("/timeseries-schemas", response_model=schemas.TimeSeriesSchema)
 def ts_schema():
-    output = [{"name": "Time", "type": "date", "format": "%Y-%m-%d"}, {"name": "Wealth Growth", "type": "number"}]
+    output = [
+        {"name": "Time", "type": "date", "format": "%Y-%m-%d"},
+        {"name": "Wealth Growth", "type": "number"},
+    ]
     return output
 
 
@@ -80,7 +83,9 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
-def create_item_for_user(user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
+def create_item_for_user(
+    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+):
     return crud.create_user_item(db=db, item=item)
 
 
@@ -94,6 +99,13 @@ def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def tickers():
     prices = db.get_data()
     return {"tickers": prices.columns.tolist()}
+
+
+@app.get("/tickerInfo", response_model=schemas.TickerInfo)
+def ticker_info(db: Session = Depends(get_db)):
+    ticker_info = crud.get_ticker_info(db)
+
+    return ticker_info
 
 
 @app.post("/portfolio-sync", response_model=schemas.CreatePortfolioResponse)
@@ -115,6 +127,8 @@ async def portfolio_async(
     db: Session = Depends(get_db),
 ):
 
-    result = await portfolio_service.get_portfolio_async(db, request.tickers, request.end_date)
+    result = await portfolio_service.get_portfolio_async(
+        db, request.tickers, request.end_date
+    )
 
     return result

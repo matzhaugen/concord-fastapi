@@ -1,4 +1,5 @@
 import datetime
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
@@ -6,7 +7,7 @@ import pytest
 from src.db import crud
 from src.db.database import Base, SessionLocal
 from src.mock_db import get_data
-from src.schemas import UserCreate
+from src.schemas import TickerName, UserCreate
 
 END_DATE = datetime.date(1990, 6, 1)
 # Dependency
@@ -33,12 +34,12 @@ def insert_test_data(db, mock_data):
     db.execute(Base.metadata.tables["stocks"].delete())
 
 
-@pytest.fixture(autouse=True)
-def truncate_all_tables_between_each_test(db):
-    for table in reversed(Base.metadata.sorted_tables):
-        if table.name == "stocks":
-            continue
-        db.execute(table.delete())
+# @pytest.fixture(autouse=True)
+# def truncate_all_tables_between_each_test(db):
+#     for table in reversed(Base.metadata.sorted_tables):
+#         if table.name == "stocks":
+#             continue
+#         db.execute(table.delete())
 
 
 def test_insert_user(db):
@@ -48,6 +49,16 @@ def test_insert_user(db):
     user_down = crud.get_users(db)[0]
 
     assert user_down.id > 0
+
+
+def test_get_unique_tickers(db):
+    tickers = crud.get_unique_tickers(db)
+    assert len(tickers) > 1
+
+
+def test_get_tickers(db):
+    ticker_info = crud.get_ticker_info(db)
+    assert len(ticker_info) > 1
 
 
 def test_get_stocks(db, insert_test_data, mock_data):

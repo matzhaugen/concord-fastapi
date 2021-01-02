@@ -23,6 +23,8 @@ services:
       OPENFAAS_URL: http://starlette-backend:8000
       STARLETTE_BACKEND_URL: http://starlette-backend:8000
       SQL_ALCHEMY_DB_URI: postgresql://postgres:postgrespassword@postgres:5432/postgres
+      DB_PASSWORD: postgrespassword
+      DB_HOST: postgres
     ports:
       - "80:80"
   postgres:

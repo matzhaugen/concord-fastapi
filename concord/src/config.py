@@ -10,6 +10,9 @@ class Config(BaseSettings):
     )
     openfaas_url: str = "http://localhost:5002"
     starlette_backend_url: str = "http://localhost:5002"
+    db_password = "postgrespassword"
+    db_host = "localhost"
+    db_user = "postgres"
 
 
 config = Config()

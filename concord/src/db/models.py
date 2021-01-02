@@ -30,5 +30,16 @@ class Stocks(Base):
     __tablename__ = "stocks"
 
     ticker = Column(String, primary_key=True, index=True)
-    date = Column(Date, primary_key=True)
+    date = Column(Date, primary_key=True, index=True)
     close = Column(Float)
+
+
+class StockMeta(Base):
+    __tablename__ = "stock_metadata"
+
+    ticker = Column(String, primary_key=True, index=True)
+    name = Column(String)
+    description = Column(String)
+    refreshed_at = Column(Date)
+    from_date = Column(Date)
+    to_date = Column(Date)

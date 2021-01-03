@@ -9,7 +9,7 @@
   import { TernarySearchTree } from './TernarySearchTree.svelte';
   
   const t = new TernarySearchTree();
-  const tickersUrl = 'http://localhost/tickers';
+  const tickersUrl = 'http://localhost/tickerInfo';
   let allWords = [];
   export let availableTickers = [];
   async function fetchWordsAsync()
@@ -21,13 +21,18 @@
   
   onMount(async () =>
   {
-    const dictionary = await promise;
-    const words = dictionary["tickers"];
-    allWords = words;
+    const words = await promise;
+    var tickerDict = {}
+    words.forEach(w => {
+      tickerDict[w['ticker']] = w['name']
+    })
+    
+    const allWords = Object.keys(tickerDict);
+
     shuffle(words);
     words.forEach(w =>
     {
-      addWordToTst(w.toLowerCase());  
+      addWordToTst(w["ticker"].toLowerCase());  
     });
   });
   
@@ -50,7 +55,7 @@
   }
   $: matchedWords = findMatches();
   $: if (searchText == '') {
-      availableTickers = allWords
+      availableTickers = allWords.slice(0, 10)
     } else {
       availableTickers = matchedWords.slice(0,25)
     }

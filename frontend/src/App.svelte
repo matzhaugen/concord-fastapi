@@ -8,24 +8,33 @@
 	import Button, {Label} from '@smui/button';
 	import Chart from './Chart.svelte'
 	import Textfield from '@smui/textfield';
+	import {format} from 'light-date';
+
 	let portfolio = [];
 	let availableTickers = [];
 	let showChart = false;
 	let dataFetch;
 	let valueTypeDate = '';
+	$: endDate = new Date()
+	$: if (valueTypeDate != '') endDate = new Date(valueTypeDate);
+	let minEndDate = new Date(2006, 1, 1)
 	function fetchData(portfolio) {
-		if (portfolio.length > 1) {
-			showChart = true;
+		
+
+		if (portfolio.length <= 1) {
+			alert("Add at least 2 stocks to your portfolio.")
+    } else if (isNaN(endDate) || endDate < minEndDate) {
+    	alert("Select a date after " + minEndDate + ".")
+    } else {
+    	showChart = true;
 	    dataFetch = fetch('http://localhost/portfolio-async', {
 	      method: 'POST',
-	      body: JSON.stringify({"tickers": portfolio, "endDate": "2000-01-01"})
+	      body: JSON.stringify({"tickers": portfolio, "endDate": format(endDate, "{yyyy}-{MM}-{dd}")})
 	    }).then(res => res.json())
-    } else {
-			alert("Add at least 2 stocks to your portfolio.")
+			
 		}
   }
-
-  $: console.log(valueTypeDate);
+  
 
 </script>
 

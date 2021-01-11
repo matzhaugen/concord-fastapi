@@ -26,6 +26,7 @@
     "svelte-fusioncharts": "^1.0.0"
   },
   "dependencies": {
+    "light-date": "^1.2.0",
     "sirv-cli": "^1.0.0"
   }
 }

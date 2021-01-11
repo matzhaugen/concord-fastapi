@@ -27,8 +27,7 @@
       tickerDict[w['ticker']] = w['name']
     })
     
-    const allWords = Object.keys(tickerDict);
-
+    allWords = Object.keys(tickerDict);
     shuffle(words);
     words.forEach(w =>
     {
@@ -40,37 +39,39 @@
   let asPattern = false;
   let searchText = '';
   $: findMatches = () =>
-  {
-    const then = performance.now();
+  {    
     const results = (asPattern ? t.patternMatch : t.prefixMatch).call(t, searchText.toLowerCase());
-    elapsed = Math.round((performance.now() - then)*100)/100;
     return results.map(w => {return w.toUpperCase()});
   }
   
+  function removePortfolioFromList(list, portfolio) {
+    portfolio.forEach((ticker) => {
+      let idx = list.indexOf(ticker);
+      if (idx > -1) {
+        list.splice(idx, 1);
+        list = list;
+      }
+    })
+    return list
+  }
   let wordCount = 0;
   function addWordToTst(w)
   {
     t.addWord(w);
     wordCount = t.wordCount;
   }
-  $: matchedWords = findMatches();
+  let matchedWords = []
   $: if (searchText == '') {
-      availableTickers = allWords.slice(0, 10)
-    } else {
-      availableTickers = matchedWords.slice(0,25)
-    }
-  
-  
-  export let portfolio = ["AA", "AXP"]
-  let filter = ['Shoes', 'Shirts'];
+    availableTickers = removePortfolioFromList([...allWords], portfolio);
+  } else {
+    availableTickers = removePortfolioFromList(findMatches(), portfolio)
+  }
+  $: availableTickers = matchedWords.slice(0, 25)
+    
+  export let portfolio = []
   function addTicker(ticker) {
     if (!portfolio.includes(ticker)) {
-      portfolio = [ticker, ...portfolio]  
-    }
-    let idx = availableTickers.indexOf(ticker);
-    if (idx > -1) {
-      availableTickers.splice(idx, 1);
-      availableTickers = availableTickers;
+      portfolio = [ticker, ...portfolio]
     }
   }
 </script>

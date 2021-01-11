@@ -13,12 +13,16 @@ services:
     networks:
       - new
     image: localhost:5001/concord
+    depends_on:
+      - "postgres"
     volumes:
       - ./concord/src:/app/src/
       - ./concord/scripts/prestart.sh:/app/prestart.sh
       - ./concord/scripts/rundev.py:/app/rundev.py
     entrypoint: /start-reload.sh
     environment:
+      SPACES_KEY: ${SPACES_KEY}
+      SPACES_SECRET: ${SPACES_SECRET}
       MODULE_NAME: src.main
       OPENFAAS_URL: http://starlette-backend:8000
       STARLETTE_BACKEND_URL: http://starlette-backend:8000

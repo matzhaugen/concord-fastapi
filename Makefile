@@ -13,6 +13,8 @@ build:
 	docker-compose build
 of:
 	faas up -f of-concord-fastapi.yml
+images:
+	./scripts/buildpush-dockerimages.sh
 ofow:
 	echo $(kubectl -n openfaas get secret basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode)
 scale-of:
@@ -40,7 +42,8 @@ kind:
 	./scripts/setup-local-cluster.sh &&\
 	 ./scripts/push-images-to-local-registry.sh &&\
 	 ENV=local ./scripts/deploy-concord.sh
+.PHONY: frontend
 frontend:
-	cd frontend && npm i && npm start dev
+	cd frontend &&  npm run dev
 registry:
 	docker service create --name registry --publish published=5001,target=5000 registry:2

@@ -6,6 +6,7 @@ import sqlalchemy
 from src.config import Config, config
 from src.db import models
 from src.db.database import engine
+from src.ingest_data import ingest_metadata
 
 
 def is_postgres_alive(config: Config):
@@ -54,3 +55,4 @@ if __name__ == "__main__":
     # asyncio.run(migrate_db(config))
     setup_schema(config)
     ingest_test_data(config)
+    ingest_metadata(config, dev=True)
